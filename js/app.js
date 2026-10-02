@@ -10,13 +10,15 @@ let state={
   settings:{
     language:'en-US',
     voice:'en-US-AriaNeural',
-    rate:0,
+    rate:100,
     pitch:0,
     origVol:100,
     addVol:100,
     start:0,
     end:0,
-    musicVol:35
+    musicVol:35,
+    timelineZoom:70,
+    playheadMs:0
   }
 };
 
@@ -27,6 +29,12 @@ let ttsDraft=null;
 let timelinePlayheadMs=0;
 let timelineZoom=70;
 let playheadDragging=false;
+
+/*
+  true while the main Play button is controlling
+  synchronized timeline playback.
+*/
+let timelinePlaybackActive=false;
 
 
 /* ============================================================
@@ -94,8 +102,39 @@ function ripple(e){
 
 function busy(btn,on=true){
   if(!btn)return;
+
   btn.classList.toggle('loading',on);
   btn.disabled=on;
+}
+
+
+/* ============================================================
+   SPEED NORMALIZATION
+   ============================================================ */
+
+function normalizeSpeedSetting(value){
+
+  const n=Number(value);
+
+  if(!Number.isFinite(n)){
+    return 100;
+  }
+
+  /*
+    Old version used 0 as normal speed.
+    New version uses 100 as normal speed.
+  */
+  if(n===0){
+    return 100;
+  }
+
+  return Math.max(
+    50,
+    Math.min(
+      200,
+      Math.round(n)
+    )
+  );
 }
 
 
@@ -104,44 +143,78 @@ function busy(btn,on=true){
    ============================================================ */
 
 function applyTheme(theme){
-  const t=theme==='light'?'light':'dark';
+
+  const t=
+    theme==='light'
+    ?'light'
+    :'dark';
 
   document.documentElement.dataset.theme=t;
 
-  localStorage.setItem('audioverse-theme',t);
+  localStorage.setItem(
+    'audioverse-theme',
+    t
+  );
 
   const icon=$('themeIcon');
   const text=$('themeText');
 
-  if(icon)icon.textContent=t==='dark'?'☀':'☾';
-  if(text)text.textContent=t==='dark'?'Light':'Dark';
+  if(icon){
+    icon.textContent=
+      t==='dark'
+      ?'☀'
+      :'☾';
+  }
 
-  const meta=document.querySelector('meta[name=theme-color]');
+  if(text){
+    text.textContent=
+      t==='dark'
+      ?'Light'
+      :'Dark';
+  }
+
+  const meta=
+    document.querySelector(
+      'meta[name=theme-color]'
+    );
 
   if(meta){
-    meta.content=t==='dark'?'#20242a':'#f7f9fc';
+    meta.content=
+      t==='dark'
+      ?'#20242a'
+      :'#f7f9fc';
   }
 }
 
 function initTheme(){
-  const saved=localStorage.getItem('audioverse-theme');
 
-  applyTheme(saved||'dark');
-
-  $('themeBtn')?.addEventListener('click',()=>{
-    const next=
-      document.documentElement.dataset.theme==='dark'
-      ?'light'
-      :'dark';
-
-    applyTheme(next);
-
-    toast(
-      next==='dark'
-      ?'Dark mode enabled'
-      :'Light mode enabled'
+  const saved=
+    localStorage.getItem(
+      'audioverse-theme'
     );
-  });
+
+  applyTheme(
+    saved||'dark'
+  );
+
+  $('themeBtn')?.addEventListener(
+    'click',
+    ()=>{
+
+      const next=
+        document.documentElement.dataset.theme==='dark'
+        ?'light'
+        :'dark';
+
+      applyTheme(next);
+
+      toast(
+        next==='dark'
+        ?'Dark mode enabled'
+        :'Light mode enabled'
+      );
+    }
+  );
 }
 
 
@@ -151,11 +224,17 @@ function initTheme(){
 
 async function refresh(){
 
-  state.media=await AVDB.getAll('media');
+  state.media=
+    await AVDB.getAll('media');
 
-  const p=await AVDB.get('projects','current');
+  const p=
+    await AVDB.get(
+      'projects',
+      'current'
+    );
 
   if(p){
+
     state={
       ...state,
       ...p,
@@ -166,16 +245,29 @@ async function refresh(){
     };
   }
 
-  timelineZoom=Number(state.settings.timelineZoom)||70;
+  state.settings.rate=
+    normalizeSpeedSetting(
+      state.settings.rate
+    );
 
-  const z=$('timelineZoom');
+  timelineZoom=
+    Number(
+      state.settings.timelineZoom
+    )||70;
 
-  if(z)z.value=timelineZoom;
+  const z=
+    $('timelineZoom');
+
+  if(z){
+    z.value=timelineZoom;
+  }
 
   timelinePlayheadMs=
     Math.max(
       0,
-      Number(state.settings.playheadMs)||0
+      Number(
+        state.settings.playheadMs
+      )||0
     );
 
   normalizeAudioTiming();
@@ -205,15 +297,24 @@ async function refresh(){
 
 function thumbHTML(m){
 
-  const src=URL.createObjectURL(m.blob);
+  const src=
+    URL.createObjectURL(
+      m.blob
+    );
 
-  setTimeout(()=>{
-    try{
-      URL.revokeObjectURL(src);
-    }catch{}
-  },30000);
+  setTimeout(
+    ()=>{
+      try{
+        URL.revokeObjectURL(src);
+      }catch{}
+    },
+    30000
+  );
 
-  if(m.type?.startsWith('video')){
+  if(
+    m.type?.startsWith('video')
+  ){
+
     return `
       <video
         src="${src}"
@@ -239,16 +340,32 @@ function thumbHTML(m){
 }
 
 function hardenMediaVideo(el){
+
   if(!el)return;
 
   el.disableRemotePlayback=true;
   el.disablePictureInPicture=true;
   el.controls=false;
 
-  el.setAttribute('playsinline','');
-  el.setAttribute('disableRemotePlayback','');
-  el.setAttribute('disablePictureInPicture','');
-  el.setAttribute('x-webkit-airplay','deny');
+  el.setAttribute(
+    'playsinline',
+    ''
+  );
+
+  el.setAttribute(
+    'disableRemotePlayback',
+    ''
+  );
+
+  el.setAttribute(
+    'disablePictureInPicture',
+    ''
+  );
+
+  el.setAttribute(
+    'x-webkit-airplay',
+    'deny'
+  );
 }
 
 
@@ -262,7 +379,7 @@ function renderMedia(){
 
   const q=
     search
-    ? search.value.toLowerCase()
+    ?search.value.toLowerCase()
     :'';
 
   const list=$('mediaList');
@@ -272,83 +389,149 @@ function renderMedia(){
   list.innerHTML='';
 
   state.media
-    .filter(x=>
-      String(x.name||'')
-        .toLowerCase()
-        .includes(q)
+    .filter(
+      x=>
+        String(x.name||'')
+          .toLowerCase()
+          .includes(q)
     )
-    .forEach(m=>{
+    .forEach(
+      m=>{
 
-      const inTimeline=
-        state.timeline.some(
-          x=>x.mediaId===m.id
-        );
+        const inTimeline=
+          state.timeline.some(
+            x=>x.mediaId===m.id
+          );
 
-      const d=document.createElement('div');
+        /*
+          Important:
+          The active narration is also considered attached.
+        */
+        const isActiveAudio=
+          !!(
+            state.audio &&
+            state.audio.mediaId===m.id
+          );
 
-      d.className=
-        'media-item '+
-        (inTimeline?'selected':'');
+        const attached=
+          inTimeline||
+          isActiveAudio;
 
-      d.title=m.name;
+        const d=
+          document.createElement('div');
 
-      d.innerHTML=`
-        <div class="thumb">
-          ${thumbHTML(m)}
-        </div>
+        d.className=
+          'media-item '+
+          (attached?'selected':'');
 
-        <div class="media-copy">
-          <b>${escapeHTML(m.name)}</b>
+        d.title=m.name;
 
-          <small>
+        d.innerHTML=`
+          <div class="thumb">
+            ${thumbHTML(m)}
+          </div>
+
+          <div class="media-copy">
+            <b>${escapeHTML(m.name)}</b>
+
+            <small>
+              ${
+                m.type?.startsWith('audio')
+                ?'Audio'
+                :'Video'
+              }
+              •
+              ${fmt(m.duration||0)}
+            </small>
+          </div>
+
+          <button
+            type="button"
+            class="media-check"
+            aria-label="${
+              isActiveAudio
+              ?'Remove active audio'
+              :inTimeline
+              ?'Remove from timeline'
+              :'Add to timeline'
+            }"
+            title="${
+              isActiveAudio
+              ?'Remove active audio'
+              :inTimeline
+              ?'Remove from timeline'
+              :'Add to timeline'
+            }">
             ${
-              m.type?.startsWith('audio')
-              ?'Audio'
-              :'Video'
+              attached
+              ?'✓'
+              :'+'
             }
-            •
-            ${fmt(m.duration||0)}
-          </small>
-        </div>
+          </button>
+        `;
 
-        <button
-          type="button"
-          class="media-check"
-          aria-label="${inTimeline?'Remove from':'Add to'} timeline"
-          title="${inTimeline?'Remove from':'Add to'} timeline">
-          ${inTimeline?'✓':'+'}
-        </button>
-      `;
+        d.onclick=async()=>{
 
-      d.onclick=()=>{
+          if(
+            m.type?.startsWith('audio')
+          ){
 
-        if(m.type?.startsWith('audio')){
-          useImportedAudio(m.id);
-        }else{
-          loadLibraryPreview(m);
-        }
+            await useImportedAudio(
+              m.id
+            );
 
-      };
-
-      d.querySelector('.media-check').onclick=
-        async e=>{
-
-          e.stopPropagation();
-
-          if(inTimeline){
-            removeMediaFromTimeline(m.id);
           }else{
-            await addToTimeline(m.id);
-          }
 
+            loadLibraryPreview(m);
+          }
         };
 
-      list.appendChild(d);
+        d.querySelector(
+          '.media-check'
+        ).onclick=
+          async e=>{
 
-      hardenMediaVideo(
-        d.querySelector('video')
-      );
-    });
+            e.stopPropagation();
+
+            if(
+              m.type?.startsWith('audio')
+            ){
+
+              if(isActiveAudio){
+
+                await detachAudioFromProject();
+
+              }else{
+
+                await useImportedAudio(
+                  m.id
+                );
+              }
+
+              return;
+            }
+
+            if(inTimeline){
+
+              removeMediaFromTimeline(
+                m.id
+              );
+
+            }else{
+
+              await addToTimeline(
+                m.id
+              );
+            }
+          };
+
+        list.appendChild(d);
+
+        hardenMediaVideo(
+          d.querySelector('video')
+        );
+      }
+    );
 }
 
 
@@ -360,21 +543,33 @@ function loadLibraryPreview(m){
 
   if(!m)return;
 
-  if(m.type?.startsWith('audio')){
-    useImportedAudio(m.id);
+  if(
+    m.type?.startsWith('audio')
+  ){
+
+    useImportedAudio(
+      m.id
+    );
+
     return;
   }
 
   if(currentURL){
+
     try{
-      URL.revokeObjectURL(currentURL);
+      URL.revokeObjectURL(
+        currentURL
+      );
     }catch{}
   }
 
   currentURL=
-    URL.createObjectURL(m.blob);
+    URL.createObjectURL(
+      m.blob
+    );
 
-  const v=$('previewVideo');
+  const v=
+    $('previewVideo');
 
   if(!v)return;
 
@@ -382,17 +577,23 @@ function loadLibraryPreview(m){
 
   hardenMediaVideo(v);
 
-  $('emptyPreview').style.display='none';
+  $('emptyPreview').style.display=
+    'none';
 
-  $('previewStatus').textContent=m.name;
+  $('previewStatus').textContent=
+    m.name;
 
   v.load();
 
-  v.currentTime=0;
+  try{
+    v.currentTime=0;
+  }catch{}
 
   v.play().catch(()=>{});
 
-  toast('Previewing '+m.name);
+  toast(
+    'Previewing '+m.name
+  );
 }
 
 function loadPreview(m){
@@ -400,15 +601,21 @@ function loadPreview(m){
   if(!m)return;
 
   if(currentURL){
+
     try{
-      URL.revokeObjectURL(currentURL);
+      URL.revokeObjectURL(
+        currentURL
+      );
     }catch{}
   }
 
   currentURL=
-    URL.createObjectURL(m.blob);
+    URL.createObjectURL(
+      m.blob
+    );
 
-  const v=$('previewVideo');
+  const v=
+    $('previewVideo');
 
   if(!v)return;
 
@@ -416,11 +623,17 @@ function loadPreview(m){
 
   hardenMediaVideo(v);
 
-  $('emptyPreview').style.display='none';
+  $('emptyPreview').style.display=
+    'none';
 
-  $('previewStatus').textContent=m.name;
+  $('previewStatus').textContent=
+    m.name;
 
   v.load();
+
+  try{
+    v.currentTime=0;
+  }catch{}
 
   v.play().catch(()=>{});
 }
@@ -433,9 +646,14 @@ function loadPreview(m){
 async function addToTimeline(id){
 
   const m=
-    state.media.find(x=>x.id===id);
+    state.media.find(
+      x=>x.id===id
+    );
 
-  if(!m||m.type?.startsWith('audio')){
+  if(
+    !m||
+    m.type?.startsWith('audio')
+  ){
     return;
   }
 
@@ -459,15 +677,20 @@ async function addToTimeline(id){
 
   loadPreview(m);
 
-  toast('Clip added to timeline');
+  toast(
+    'Clip added to timeline'
+  );
 }
 
-async function removeMediaFromTimeline(mediaId){
+async function removeMediaFromTimeline(
+  mediaId
+){
 
   const current=
     state.timeline.find(
-      x=>x.id===state.selected &&
-      x.mediaId===mediaId
+      x=>
+        x.id===state.selected &&
+        x.mediaId===mediaId
     );
 
   state.timeline=
@@ -484,7 +707,9 @@ async function removeMediaFromTimeline(mediaId){
   renderTimeline();
   renderMedia();
 
-  toast('Clip removed from timeline');
+  toast(
+    'Clip removed from timeline'
+  );
 }
 
 
@@ -494,15 +719,19 @@ async function removeMediaFromTimeline(mediaId){
 
 function normalizeAudioTiming(){
 
-  const s=state.settings||{};
+  const s=
+    state.settings||{};
 
-  const end=Number(s.end)||0;
-  const start=Number(s.start)||0;
+  const end=
+    Number(s.end)||0;
+
+  const start=
+    Number(s.start)||0;
 
   const duration=
     Number(
-      state.audio?.duration ||
-      state.audio?.end ||
+      state.audio?.duration||
+      state.audio?.end||
       0
     );
 
@@ -510,8 +739,12 @@ function normalizeAudioTiming(){
     duration>0 &&
     end>duration/1000*1.5
   ){
-    s.start=start/1000;
-    s.end=end/1000;
+
+    s.start=
+      start/1000;
+
+    s.end=
+      end/1000;
 
     state.settings=s;
   }
@@ -520,8 +753,19 @@ function normalizeAudioTiming(){
     state.audio &&
     !state.audio.duration
   ){
-    state.audio.duration=duration;
+
+    state.audio.duration=
+      duration;
   }
+
+  /*
+    Ensure old projects have the
+    new speed semantics.
+  */
+  s.rate=
+    normalizeSpeedSetting(
+      s.rate
+    );
 }
 
 
@@ -529,147 +773,120 @@ function normalizeAudioTiming(){
    HTML5 AUDIO PREVIEW
    ============================================================ */
 
-/*
-  This is the important TTS fix.
-
-  The generated MP3 is loaded directly into the same
-  HTML5 <audio> element used by the UI.
-
-  We wait for loadedmetadata and read audio.duration.
-
-  This avoids depending on the manual MP3 parser for
-  generated Edge TTS files.
-*/
-
 function loadBlobIntoHTML5Audio(blob){
 
-  return new Promise((resolve,reject)=>{
+  return new Promise(
+    (resolve,reject)=>{
 
-    const audio=$('ttsAudio');
+      const audio=
+        $('ttsAudio');
 
-    if(!audio){
-      reject(
-        new Error(
-          'The TTS audio player was not found in the page.'
-        )
-      );
-      return;
-    }
+      if(!audio){
 
-    if(!blob){
-      reject(
-        new Error(
-          'No audio was generated.'
-        )
-      );
-      return;
-    }
-
-    if(audio._audioverseURL){
-
-      try{
-        URL.revokeObjectURL(
-          audio._audioverseURL
+        reject(
+          new Error(
+            'The TTS audio player was not found in the page.'
+          )
         );
-      }catch{}
 
-      audio._audioverseURL=null;
-    }
-
-    const url=
-      URL.createObjectURL(blob);
-
-    audio._audioverseURL=url;
-
-    let finished=false;
-
-    const cleanup=()=>{
-
-      audio.removeEventListener(
-        'loadedmetadata',
-        onMetadata
-      );
-
-      audio.removeEventListener(
-        'durationchange',
-        onDuration
-      );
-
-      audio.removeEventListener(
-        'canplay',
-        onCanPlay
-      );
-
-      audio.removeEventListener(
-        'error',
-        onError
-      );
-
-      clearTimeout(timer);
-    };
-
-    const finish=()=>{
-
-      if(finished)return;
-
-      const d=Number(audio.duration);
-
-      if(
-        Number.isFinite(d) &&
-        d>0
-      ){
-
-        finished=true;
-
-        cleanup();
-
-        resolve(
-          Math.round(d*1000)
-        );
+        return;
       }
-    };
 
-    const onMetadata=()=>{
-      finish();
-    };
+      if(!blob){
 
-    const onDuration=()=>{
-      finish();
-    };
+        reject(
+          new Error(
+            'No audio was generated.'
+          )
+        );
 
-    const onCanPlay=()=>{
-      finish();
-    };
+        return;
+      }
 
-    const onError=()=>{
+      if(audio._audioverseURL){
 
-      if(finished)return;
+        try{
+          URL.revokeObjectURL(
+            audio._audioverseURL
+          );
+        }catch{}
 
-      finished=true;
+        audio._audioverseURL=null;
+      }
 
-      cleanup();
+      const url=
+        URL.createObjectURL(
+          blob
+        );
 
-      reject(
-        new Error(
-          'The generated audio could not be loaded by the browser.'
-        )
-      );
-    };
+      audio._audioverseURL=url;
 
-    const timer=setTimeout(()=>{
+      let finished=false;
 
-      if(finished)return;
+      const cleanup=()=>{
 
-      const d=Number(audio.duration);
+        audio.removeEventListener(
+          'loadedmetadata',
+          onMetadata
+        );
 
-      if(
-        Number.isFinite(d) &&
-        d>0
-      ){
+        audio.removeEventListener(
+          'durationchange',
+          onDuration
+        );
 
+        audio.removeEventListener(
+          'canplay',
+          onCanPlay
+        );
+
+        audio.removeEventListener(
+          'error',
+          onError
+        );
+
+        clearTimeout(timer);
+      };
+
+      const finish=()=>{
+
+        if(finished)return;
+
+        const d=
+          Number(
+            audio.duration
+          );
+
+        if(
+          Number.isFinite(d)&&
+          d>0
+        ){
+
+          finished=true;
+
+          cleanup();
+
+          resolve(
+            Math.round(d*1000)
+          );
+        }
+      };
+
+      const onMetadata=()=>{
         finish();
+      };
 
-      }else{
+      const onDuration=()=>{
+        finish();
+      };
+
+      const onCanPlay=()=>{
+        finish();
+      };
+
+      const onError=()=>{
+
+        if(finished)return;
 
         finished=true;
 
@@ -677,66 +894,107 @@ function loadBlobIntoHTML5Audio(blob){
 
         reject(
           new Error(
-            'The generated audio loaded, but HTML5 could not determine its duration.'
+            'The generated audio could not be loaded by the browser.'
           )
         );
-      }
+      };
 
-    },15000);
+      const timer=
+        setTimeout(
+          ()=>{
 
-    audio.addEventListener(
-      'loadedmetadata',
-      onMetadata
-    );
+            if(finished)return;
 
-    audio.addEventListener(
-      'durationchange',
-      onDuration
-    );
+            const d=
+              Number(
+                audio.duration
+              );
 
-    audio.addEventListener(
-      'canplay',
-      onCanPlay
-    );
+            if(
+              Number.isFinite(d)&&
+              d>0
+            ){
 
-    audio.addEventListener(
-      'error',
-      onError
-    );
+              finish();
 
-    audio.preload='metadata';
+            }else{
 
-    audio.volume=
-      Math.max(
-        0,
-        Math.min(
-          1,
-          (Number($('addVol')?.value)||100)/100
-        )
+              finished=true;
+
+              cleanup();
+
+              reject(
+                new Error(
+                  'The generated audio loaded, but HTML5 could not determine its duration.'
+                )
+              );
+            }
+
+          },
+          15000
+        );
+
+      audio.addEventListener(
+        'loadedmetadata',
+        onMetadata
       );
 
-    audio.src=url;
+      audio.addEventListener(
+        'durationchange',
+        onDuration
+      );
 
-    try{
-      audio.load();
-    }catch(e){
-      onError();
+      audio.addEventListener(
+        'canplay',
+        onCanPlay
+      );
+
+      audio.addEventListener(
+        'error',
+        onError
+      );
+
+      audio.preload='auto';
+
+      audio.volume=
+        Math.max(
+          0,
+          Math.min(
+            1,
+            (
+              Number(
+                $('addVol')?.value
+              )||100
+            )/100
+          )
+        );
+
+      audio.src=url;
+
+      try{
+        audio.load();
+      }catch{
+        onError();
+      }
     }
-
-  });
+  );
 }
-
-
-/*
-  Normal audio preview for imported/generated
-  media stored in IndexedDB.
-*/
 
 function setAudioPreview(m){
 
-  const a=$('ttsAudio');
+  const a=
+    $('ttsAudio');
 
-  if(!a||!m?.blob)return;
+  if(
+    !a||
+    !m?.blob
+  ){
+    return;
+  }
+
+  try{
+    a.pause();
+  }catch{}
 
   if(a._audioverseURL){
 
@@ -750,143 +1008,163 @@ function setAudioPreview(m){
   }
 
   const url=
-    URL.createObjectURL(m.blob);
+    URL.createObjectURL(
+      m.blob
+    );
 
   a._audioverseURL=url;
 
   a.src=url;
-
-  a.preload='metadata';
+  a.preload='auto';
 
   a.volume=
     Math.max(
       0,
       Math.min(
         1,
-        (Number($('addVol')?.value)||100)/100
+        (
+          Number(
+            $('addVol')?.value
+          )||100
+        )/100
       )
     );
 
-  a.load();
+  try{
+    a.load();
+  }catch{}
 }
-
-
-/*
-  Wait for an existing HTML5 audio player to have
-  valid metadata.
-*/
 
 function waitForHTML5AudioMetadata(audio){
 
-  return new Promise((resolve,reject)=>{
+  return new Promise(
+    (resolve,reject)=>{
 
-    if(!audio){
-      reject(
-        new Error(
-          'Audio player not found.'
-        )
-      );
-      return;
-    }
+      if(!audio){
 
-    const check=()=>{
-
-      const d=Number(audio.duration);
-
-      if(
-        Number.isFinite(d) &&
-        d>0
-      ){
-        cleanup();
-        resolve(
-          Math.round(d*1000)
+        reject(
+          new Error(
+            'Audio player not found.'
+          )
         );
+
+        return;
       }
-    };
 
-    const onError=()=>{
+      const check=()=>{
 
-      cleanup();
+        const d=
+          Number(
+            audio.duration
+          );
 
-      reject(
-        new Error(
-          'Browser could not read the audio file.'
-        )
-      );
-    };
+        if(
+          Number.isFinite(d)&&
+          d>0
+        ){
 
-    const cleanup=()=>{
+          cleanup();
 
-      audio.removeEventListener(
-        'loadedmetadata',
-        check
-      );
+          resolve(
+            Math.round(d*1000)
+          );
+        }
+      };
 
-      audio.removeEventListener(
-        'durationchange',
-        check
-      );
+      const onError=()=>{
 
-      audio.removeEventListener(
-        'canplay',
-        check
-      );
-
-      audio.removeEventListener(
-        'error',
-        onError
-      );
-
-      clearTimeout(timer);
-    };
-
-    audio.addEventListener(
-      'loadedmetadata',
-      check
-    );
-
-    audio.addEventListener(
-      'durationchange',
-      check
-    );
-
-    audio.addEventListener(
-      'canplay',
-      check
-    );
-
-    audio.addEventListener(
-      'error',
-      onError
-    );
-
-    const timer=setTimeout(()=>{
-
-      const d=Number(audio.duration);
-
-      if(
-        Number.isFinite(d) &&
-        d>0
-      ){
-        cleanup();
-
-        resolve(
-          Math.round(d*1000)
-        );
-      }else{
         cleanup();
 
         reject(
           new Error(
-            'Audio duration could not be determined.'
+            'Browser could not read the audio file.'
           )
         );
-      }
+      };
 
-    },15000);
+      const cleanup=()=>{
 
-    check();
-  });
+        audio.removeEventListener(
+          'loadedmetadata',
+          check
+        );
+
+        audio.removeEventListener(
+          'durationchange',
+          check
+        );
+
+        audio.removeEventListener(
+          'canplay',
+          check
+        );
+
+        audio.removeEventListener(
+          'error',
+          onError
+        );
+
+        clearTimeout(timer);
+      };
+
+      audio.addEventListener(
+        'loadedmetadata',
+        check
+      );
+
+      audio.addEventListener(
+        'durationchange',
+        check
+      );
+
+      audio.addEventListener(
+        'canplay',
+        check
+      );
+
+      audio.addEventListener(
+        'error',
+        onError
+      );
+
+      const timer=
+        setTimeout(
+          ()=>{
+
+            const d=
+              Number(
+                audio.duration
+              );
+
+            if(
+              Number.isFinite(d)&&
+              d>0
+            ){
+
+              cleanup();
+
+              resolve(
+                Math.round(d*1000)
+              );
+
+            }else{
+
+              cleanup();
+
+              reject(
+                new Error(
+                  'Audio duration could not be determined.'
+                )
+              );
+            }
+
+          },
+          15000
+        );
+
+      check();
+    }
+  );
 }
 
 
@@ -896,10 +1174,11 @@ function waitForHTML5AudioMetadata(audio){
 
 function fmtPrecise(ms){
 
-  ms=Math.max(
-    0,
-    Number(ms)||0
-  );
+  ms=
+    Math.max(
+      0,
+      Number(ms)||0
+    );
 
   const totalTenths=
     Math.round(ms/100);
@@ -908,10 +1187,14 @@ function fmtPrecise(ms){
     totalTenths%10;
 
   const totalSeconds=
-    Math.floor(totalTenths/10);
+    Math.floor(
+      totalTenths/10
+    );
 
   const h=
-    Math.floor(totalSeconds/3600);
+    Math.floor(
+      totalSeconds/3600
+    );
 
   const m=
     Math.floor(
@@ -923,8 +1206,8 @@ function fmtPrecise(ms){
 
   const base=
     h
-    ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
-    : `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    ?`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
+    :`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 
   return `${base}.${tenths}`;
 }
@@ -952,7 +1235,9 @@ function clipAtTimelineMs(ms){
 
   let cursor=0;
 
-  for(const it of state.timeline){
+  for(
+    const it of state.timeline
+  ){
 
     const dur=
       Math.max(
@@ -962,10 +1247,13 @@ function clipAtTimelineMs(ms){
       );
 
     if(
-      ms<=cursor+dur ||
-      it===state.timeline[state.timeline.length-1]
+      ms<=cursor+dur||
+      it===state.timeline[
+        state.timeline.length-1
+      ]
     ){
-      return {
+
+      return{
         it,
         start:cursor,
         offset:
@@ -984,6 +1272,194 @@ function clipAtTimelineMs(ms){
 
   return null;
 }
+
+
+/* ============================================================
+   TIMELINE AUDIO SYNCHRONIZATION
+   ============================================================ */
+
+function timelineAudioTargetMs(){
+
+  if(!state.audio){
+    return null;
+  }
+
+  const start=
+    audioStartMs();
+
+  const duration=
+    audioDurationMs();
+
+  const endPadding=
+    audioEndPaddingMs();
+
+  const total=
+    start+
+    duration+
+    endPadding;
+
+  const t=
+    timelinePlayheadMs;
+
+  if(
+    t<start||
+    t>total
+  ){
+    return null;
+  }
+
+  return Math.max(
+    0,
+    Math.min(
+      duration,
+      t-start
+    )
+  );
+}
+
+function syncTimelineAudio(){
+
+  const audio=
+    $('ttsAudio');
+
+  if(
+    !audio||
+    !state.audio
+  ){
+    return;
+  }
+
+  const target=
+    timelineAudioTargetMs();
+
+  if(target===null){
+
+    try{
+      audio.pause();
+    }catch{}
+
+    return;
+  }
+
+  const targetSec=
+    target/1000;
+
+  if(
+    !Number.isFinite(
+      audio.currentTime
+    )||
+    Math.abs(
+      audio.currentTime-
+      targetSec
+    )>0.12
+  ){
+
+    try{
+      audio.currentTime=
+        targetSec;
+    }catch{}
+  }
+}
+
+function playTimelineAudio(){
+
+  const audio=
+    $('ttsAudio');
+
+  if(
+    !audio||
+    !state.audio
+  ){
+    return;
+  }
+
+  const target=
+    timelineAudioTargetMs();
+
+  if(target===null){
+    return;
+  }
+
+  try{
+
+    const targetSec=
+      target/1000;
+
+    if(
+      !Number.isFinite(
+        audio.currentTime
+      )||
+      Math.abs(
+        audio.currentTime-
+        targetSec
+      )>0.15
+    ){
+
+      audio.currentTime=
+        targetSec;
+    }
+
+    audio.volume=
+      Math.max(
+        0,
+        Math.min(
+          1,
+          (
+            Number(
+              $('addVol')?.value
+            )||100
+          )/100
+        )
+      );
+
+    audio.play().catch(
+      ()=>{}
+    );
+
+  }catch{}
+}
+
+function pauseTimelineAudio(){
+
+  const audio=
+    $('ttsAudio');
+
+  if(audio){
+
+    try{
+      audio.pause();
+    }catch{}
+  }
+}
+
+function stopTimelineAudio(){
+
+  const audio=
+    $('ttsAudio');
+
+  if(audio){
+
+    try{
+
+      audio.pause();
+
+      audio.currentTime=0;
+
+    }catch{}
+  }
+}
+
+function seekTimelineAudio(){
+
+  syncTimelineAudio();
+
+  if(
+    timelinePlaybackActive
+  ){
+    playTimelineAudio();
+  }
+}
+
 
 function setTimelinePlayhead(
   ms,
@@ -1008,17 +1484,21 @@ function setTimelinePlayhead(
       )
     );
 
-  const field=$('playheadTime');
+  const field=
+    $('playheadTime');
 
   if(field){
     field.value=
-      (timelinePlayheadMs/1000)
-        .toFixed(1);
+      (
+        timelinePlayheadMs/1000
+      ).toFixed(1);
   }
 
-  const ph=$('timelinePlayhead');
+  const ph=
+    $('timelinePlayhead');
 
   if(ph){
+
     ph.style.left=
       (
         88+
@@ -1037,7 +1517,8 @@ function setTimelinePlayhead(
     if(hit){
 
       if(
-        state.selected!==hit.it.id
+        state.selected!==
+        hit.it.id
       ){
 
         state.selected=
@@ -1059,9 +1540,10 @@ function setTimelinePlayhead(
           $('previewVideo');
 
         if(
-          !previewVideo.src ||
+          !previewVideo.src||
           $('previewStatus').textContent!==m.name
         ){
+
           loadPreview(m);
         }
 
@@ -1081,9 +1563,15 @@ function setTimelinePlayhead(
     }
   }
 
+  /*
+    This is the important audio synchronization point.
+  */
+  syncTimelineAudio();
+
   if(scroll){
 
-    const sc=$('timelineScroll');
+    const sc=
+      $('timelineScroll');
 
     if(sc){
 
@@ -1092,14 +1580,18 @@ function setTimelinePlayhead(
         timelinePlayheadMs/1000*
         timelineZoom;
 
-      const left=sc.scrollLeft;
+      const left=
+        sc.scrollLeft;
+
       const right=
-        left+sc.clientWidth;
+        left+
+        sc.clientWidth;
 
       if(
-        x<left+100 ||
+        x<left+100||
         x>right-100
       ){
+
         sc.scrollLeft=
           Math.max(
             0,
@@ -1116,7 +1608,8 @@ function setTimelinePlayhead(
 
 function buildRuler(totalMs){
 
-  const ruler=$('ruler');
+  const ruler=
+    $('ruler');
 
   if(!ruler)return;
 
@@ -1163,14 +1656,18 @@ function buildRuler(totalMs){
       sec*timelineZoom;
 
     const tick=
-      document.createElement('span');
+      document.createElement(
+        'span'
+      );
 
     tick.className=
       'ruler-tick '+
       (
         Math.abs(
           sec/majorStep-
-          Math.round(sec/majorStep)
+          Math.round(
+            sec/majorStep
+          )
         )<1e-6
         ?'major'
         :'minor'
@@ -1180,10 +1677,15 @@ function buildRuler(totalMs){
       x+'px';
 
     if(
-      tick.classList.contains('major')
+      tick.classList.contains(
+        'major'
+      )
     ){
+
       tick.dataset.label=
-        fmtPrecise(sec*1000);
+        fmtPrecise(
+          sec*1000
+        );
     }
 
     frag.appendChild(tick);
@@ -1201,7 +1703,8 @@ function buildRuler(totalMs){
 
 function renderTimeline(){
 
-  const sc=$('timelineScroll');
+  const sc=
+    $('timelineScroll');
 
   const savedLeft=
     sc?sc.scrollLeft:0;
@@ -1234,7 +1737,8 @@ function renderTimeline(){
 
   buildRuler(total);
 
-  const t=$('timeline');
+  const t=
+    $('timeline');
 
   t.innerHTML='';
 
@@ -1247,7 +1751,9 @@ function renderTimeline(){
     ([name,type])=>{
 
       const row=
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
 
       row.className='track';
 
@@ -1269,115 +1775,132 @@ function renderTimeline(){
   const tv=
     $('track-video');
 
-  state.timeline.forEach(it=>{
+  state.timeline.forEach(
+    it=>{
 
-    const d=
-      document.createElement('div');
-
-    d.className=
-      'clip-block '+
-      (
-        it.id===state.selected
-        ?'selected'
-        :''
-      );
-
-    const dur=
-      Math.max(
-        0,
-        it.outMs-it.inMs
-      );
-
-    d.style.width=
-      Math.max(
-        6,
-        dur/1000*timelineZoom
-      )+'px';
-
-    d.dataset.id=it.id;
-
-    d.innerHTML=`
-      <b>${escapeHTML(it.name)}</b>
-      <small>${fmtPrecise(dur)}</small>
-      <i class="trim-handle left"></i>
-      <i class="trim-handle right"></i>
-    `;
-
-    d.onclick=e=>{
-
-      if(
-        e.target.classList.contains(
-          'trim-handle'
-        )
-      ){
-        return;
-      }
-
-      state.selected=
-        it.id;
-
-      let start=0;
-
-      for(
-        const x of state.timeline
-      ){
-
-        if(x.id===it.id)break;
-
-        start+=
-          Math.max(
-            0,
-            x.outMs-x.inMs
-          );
-      }
-
-      setTimelinePlayhead(
-        start,
-        {
-          preview:true,
-          scroll:false
-        }
-      );
-
-      const m=
-        state.media.find(
-          x=>x.id===it.mediaId
+      const d=
+        document.createElement(
+          'div'
         );
 
-      if(m){
-        loadPreview(m);
-      }
+      d.className=
+        'clip-block '+
+        (
+          it.id===state.selected
+          ?'selected'
+          :''
+        );
 
-      renderTimeline();
-      renderMedia();
-      renderInspector();
-    };
+      const dur=
+        Math.max(
+          0,
+          it.outMs-it.inMs
+        );
 
-    tv.appendChild(d);
-  });
+      d.style.width=
+        Math.max(
+          6,
+          dur/1000*
+          timelineZoom
+        )+'px';
 
+      d.dataset.id=
+        it.id;
+
+      d.innerHTML=`
+        <b>${escapeHTML(it.name)}</b>
+        <small>${fmtPrecise(dur)}</small>
+
+        <i class="trim-handle left"></i>
+        <i class="trim-handle right"></i>
+      `;
+
+      d.onclick=e=>{
+
+        if(
+          e.target.classList.contains(
+            'trim-handle'
+          )
+        ){
+          return;
+        }
+
+        state.selected=
+          it.id;
+
+        let start=0;
+
+        for(
+          const x of state.timeline
+        ){
+
+          if(x.id===it.id)break;
+
+          start+=
+            Math.max(
+              0,
+              x.outMs-x.inMs
+            );
+        }
+
+        setTimelinePlayhead(
+          start,
+          {
+            preview:true,
+            scroll:false
+          }
+        );
+
+        const m=
+          state.media.find(
+            x=>x.id===it.mediaId
+          );
+
+        if(m){
+          loadPreview(m);
+        }
+
+        renderTimeline();
+        renderMedia();
+        renderInspector();
+      };
+
+      tv.appendChild(d);
+    }
+  );
+
+  /*
+    Render the active narration block.
+  */
   const a=
     $('track-audio');
 
-  if(state.audio){
+  if(
+    a&&
+    state.audio
+  ){
 
     const d=
-      document.createElement('div');
+      document.createElement(
+        'div'
+      );
 
-    d.className='audio-block';
+    d.className=
+      'audio-block';
 
     const dur=
       Math.max(
         0,
-        audioDurationMs()+
         audioStartMs()+
+        audioDurationMs()+
         audioEndPaddingMs()
       );
 
     d.style.width=
       Math.max(
         80,
-        dur/1000*timelineZoom
+        dur/1000*
+        timelineZoom
       )+'px';
 
     d.style.marginLeft=
@@ -1386,8 +1909,52 @@ function renderTimeline(){
         timelineZoom
       )+'px';
 
-    d.innerHTML=
-      '<div class="wave"></div>';
+    d.title=
+      state.audio.name||
+      'Narration';
+
+    d.innerHTML=`
+      <div class="wave"></div>
+    `;
+
+    d.onclick=async()=>{
+
+      timelinePlaybackActive=false;
+
+      const v=
+        $('previewVideo');
+
+      if(v){
+        try{
+          v.pause();
+        }catch{}
+      }
+
+      setTimelinePlayhead(
+        audioStartMs(),
+        {
+          preview:false,
+          scroll:false
+        }
+      );
+
+      const m=
+        currentAudioMedia();
+
+      if(m){
+        setAudioPreview(m);
+        await waitForHTML5AudioMetadata(
+          $('ttsAudio')
+        ).catch(()=>{});
+      }
+
+      playTimelineAudio();
+
+      if($('ttsStatus')){
+        $('ttsStatus').textContent=
+          'Playing narration…';
+      }
+    };
 
     a.appendChild(d);
   }
@@ -1404,6 +1971,7 @@ function renderTimeline(){
     $('timelinePlayhead');
 
   if(ph){
+
     ph.style.left=
       (
         88+
@@ -1474,22 +2042,37 @@ async function saveState(){
   state.settings={
     ...state.settings,
 
-    language:$('language').value,
-    voice:$('voice').value,
+    language:
+      $('language').value,
 
-    rate:+$('speed').value,
-    pitch:+$('pitch').value,
+    voice:
+      $('voice').value,
 
-    origVol:+$('origVol').value,
-    addVol:+$('addVol').value,
+    rate:
+      normalizeSpeedSetting(
+        +$('speed').value
+      ),
+
+    pitch:
+      +$('pitch').value,
+
+    origVol:
+      +$('origVol').value,
+
+    addVol:
+      +$('addVol').value,
 
     start:startSec,
+
     end:endSec,
 
-    musicVol:+$('musicVol').value,
+    musicVol:
+      +$('musicVol').value,
 
     timelineZoom,
-    playheadMs:timelinePlayheadMs
+
+    playheadMs:
+      timelinePlayheadMs
   };
 
   if(state.audio){
@@ -1522,13 +2105,27 @@ async function saveState(){
     'projects',
     {
       id:'current',
-      name:state.name,
-      timeline:state.timeline,
-      selected:state.selected,
-      audio:state.audio,
-      srt:state.srt||null,
-      music:state.music,
-      settings:state.settings
+
+      name:
+        state.name,
+
+      timeline:
+        state.timeline,
+
+      selected:
+        state.selected,
+
+      audio:
+        state.audio,
+
+      srt:
+        state.srt||null,
+
+      music:
+        state.music,
+
+      settings:
+        state.settings
     }
   );
 
@@ -1574,9 +2171,7 @@ function parseMp3DurationFromBuffer(buffer){
         (
           (bytes[8]&0x7f)<<7
         )|
-        (
-          bytes[9]&0x7f
-        );
+        (bytes[9]&0x7f);
 
       pos=
         10+
@@ -1603,9 +2198,23 @@ function parseMp3DurationFromBuffer(buffer){
     };
 
     const sampleRates={
-      0:[44100,48000,32000],
-      1:[22050,24000,16000],
-      2:[11025,12000,8000]
+      0:[
+        44100,
+        48000,
+        32000
+      ],
+
+      1:[
+        22050,
+        24000,
+        16000
+      ],
+
+      2:[
+        11025,
+        12000,
+        8000
+      ]
     };
 
     let frames=0;
@@ -1621,16 +2230,19 @@ function parseMp3DurationFromBuffer(buffer){
     ){
 
       if(
-        bytes[i]!==0xff ||
+        bytes[i]!==0xff||
         (bytes[i+1]&0xe0)!==0xe0
       ){
+
         i++;
         continue;
       }
 
-      const b1=bytes[i+1];
-      const b2=bytes[i+2];
-      const b3=bytes[i+3];
+      const b1=
+        bytes[i+1];
+
+      const b2=
+        bytes[i+2];
 
       const versionBits=
         (b1>>3)&3;
@@ -1645,11 +2257,12 @@ function parseMp3DurationFromBuffer(buffer){
         (b2>>2)&3;
 
       if(
-        layer!==1 ||
-        bitrateIndex===0 ||
-        bitrateIndex===15 ||
+        layer!==1||
+        bitrateIndex===0||
+        bitrateIndex===15||
         srIndex===3
       ){
+
         i++;
         continue;
       }
@@ -1660,22 +2273,25 @@ function parseMp3DurationFromBuffer(buffer){
         :(versionBits===2?2:0);
 
       if(!version){
+
         i++;
         continue;
       }
 
       const kbps=
-        bitratesV1[version][
-          bitrateIndex
-        ];
+        bitratesV1[
+          version
+        ][bitrateIndex];
 
       const sr=
         sampleRates[
-          version===1?0:
-          (version===2?1:2)
+          version===1
+          ?0
+          :(version===2?1:2)
         ][srIndex];
 
       if(!kbps||!sr){
+
         i++;
         continue;
       }
@@ -1704,9 +2320,10 @@ function parseMp3DurationFromBuffer(buffer){
         )+padding;
 
       if(
-        frameLen<24 ||
+        frameLen<24||
         i+frameLen>bytes.length
       ){
+
         i++;
         continue;
       }
@@ -1719,7 +2336,8 @@ function parseMp3DurationFromBuffer(buffer){
 
       frames++;
 
-      bytesTotal+=frameLen;
+      bytesTotal+=
+        frameLen;
 
       samplesTotal+=
         samplesPerFrame;
@@ -1727,32 +2345,37 @@ function parseMp3DurationFromBuffer(buffer){
       i+=frameLen;
 
       if(
-        frames>=100 &&
-        bytesTotal>1024*1024 &&
+        frames>=100&&
+        bytesTotal>1024*1024&&
         i>bytes.length-4096
       ){
+
         break;
       }
     }
 
     if(
-      !frames ||
+      !frames||
       !sampleRate
     ){
+
       return 0;
     }
 
     const byFrames=
-      samplesTotal/sampleRate;
+      samplesTotal/
+      sampleRate;
 
     if(
-      Number.isFinite(byFrames) &&
+      Number.isFinite(byFrames)&&
       byFrames>0
     ){
+
       return byFrames;
     }
 
     if(firstBitrate){
+
       return(
         (bytes.length-pos)*8/
         (firstBitrate*1000)
@@ -1784,69 +2407,100 @@ async function mediaDuration(file){
     ?file
     :new Blob([file]);
 
-  /*
-    First choice:
-    Browser-native HTML5 metadata.
-  */
-
   const browserDuration=
-    await new Promise(resolve=>{
+    await new Promise(
+      resolve=>{
 
-      const isVideo=
-        (file.type||'').startsWith('video/') ||
-        /\.(mp4|webm|mov|mkv|m4v|avi)$/i.test(
-          file.name||''
-        );
+        const isVideo=
+          (file.type||'')
+            .startsWith('video/')||
+          /\.(mp4|webm|mov|mkv|m4v|avi)$/i
+            .test(file.name||'');
 
-      const el=
-        document.createElement(
-          isVideo?'video':'audio'
-        );
+        const el=
+          document.createElement(
+            isVideo
+            ?'video'
+            :'audio'
+          );
 
-      const u=
-        URL.createObjectURL(blob);
+        const u=
+          URL.createObjectURL(
+            blob
+          );
 
-      let settled=false;
+        let settled=false;
 
-      const finish=d=>{
+        const finish=d=>{
 
-        if(settled)return;
+          if(settled)return;
 
-        const n=Number(d);
+          const n=
+            Number(d);
 
-        if(
-          Number.isFinite(n) &&
-          n>0
-        ){
+          if(
+            Number.isFinite(n)&&
+            n>0
+          ){
 
-          settled=true;
+            settled=true;
 
-          cleanup();
+            cleanup();
 
-          resolve(n*1000);
-        }
-      };
+            resolve(
+              n*1000
+            );
+          }
+        };
 
-      const cleanup=()=>{
+        const cleanup=()=>{
 
-        clearTimeout(timer);
+          clearTimeout(timer);
 
-        el.onloadedmetadata=null;
-        el.ondurationchange=null;
-        el.onerror=null;
+          el.onloadedmetadata=null;
+          el.ondurationchange=null;
+          el.onerror=null;
 
-        try{
-          URL.revokeObjectURL(u);
-        }catch{}
+          try{
+            URL.revokeObjectURL(u);
+          }catch{}
 
-        try{
-          el.removeAttribute('src');
-          el.load();
-        }catch{}
-      };
+          try{
+            el.removeAttribute('src');
+            el.load();
+          }catch{}
+        };
 
-      const timer=
-        setTimeout(()=>{
+        const timer=
+          setTimeout(
+            ()=>{
+
+              if(!settled){
+
+                settled=true;
+
+                cleanup();
+
+                resolve(0);
+              }
+
+            },
+            10000
+          );
+
+        el.preload='metadata';
+
+        el.onloadedmetadata=
+          ()=>finish(
+            el.duration
+          );
+
+        el.ondurationchange=
+          ()=>finish(
+            el.duration
+          );
+
+        el.onerror=()=>{
 
           if(!settled){
 
@@ -1856,52 +2510,30 @@ async function mediaDuration(file){
 
             resolve(0);
           }
+        };
 
-        },10000);
+        el.src=u;
 
-      el.preload='metadata';
-
-      el.onloadedmetadata=
-        ()=>finish(el.duration);
-
-      el.ondurationchange=
-        ()=>finish(el.duration);
-
-      el.onerror=()=>{
-
-        if(!settled){
-
-          settled=true;
-
-          cleanup();
-
-          resolve(0);
-        }
-      };
-
-      el.src=u;
-
-      try{
-        el.load();
-      }catch{}
-    });
+        try{
+          el.load();
+        }catch{}
+      }
+    );
 
   if(browserDuration){
+
     return Math.round(
       browserDuration
     );
   }
 
-
-  /*
-    MP3 fallback.
-  */
-
   const type=
-    (file.type||'').toLowerCase();
+    (file.type||'')
+      .toLowerCase();
 
   const name=
-    (file.name||'').toLowerCase();
+    (file.name||'')
+      .toLowerCase();
 
   if(
     type.includes('mpeg')||
@@ -1918,16 +2550,12 @@ async function mediaDuration(file){
       );
 
     if(parsed){
+
       return Math.round(
         parsed*1000
       );
     }
   }
-
-
-  /*
-    Final Web Audio fallback.
-  */
 
   try{
 
@@ -1958,6 +2586,7 @@ async function mediaDuration(file){
         Number.isFinite(d)&&
         d>0
       ){
+
         return Math.round(
           d*1000
         );
@@ -1983,22 +2612,27 @@ async function mediaDuration(file){
 function fileKind(file){
 
   const t=
-    (file.type||'').toLowerCase();
+    (file.type||'')
+      .toLowerCase();
 
   const n=
     file.name.toLowerCase();
 
   if(
     t.startsWith('video/')||
-    /\.(mp4|webm|mov|mkv|m4v|avi|mpeg|mpg)$/i.test(n)
+    /\.(mp4|webm|mov|mkv|m4v|avi|mpeg|mpg)$/i
+      .test(n)
   ){
+
     return 'video';
   }
 
   if(
     t.startsWith('audio/')||
-    /\.(mp3|wav|m4a|aac|ogg|flac|opus)$/i.test(n)
+    /\.(mp3|wav|m4a|aac|ogg|flac|opus)$/i
+      .test(n)
   ){
+
     return 'audio';
   }
 
@@ -2021,13 +2655,17 @@ async function importFiles(files){
   let skipped=0;
   let firstVideo=null;
 
-  for(const file of list){
+  for(
+    const file of list
+  ){
 
     const kind=
       fileKind(file);
 
     if(!kind){
+
       skipped++;
+
       continue;
     }
 
@@ -2037,13 +2675,18 @@ async function importFiles(files){
         crypto.randomUUID();
 
       const duration=
-        await mediaDuration(file);
+        await mediaDuration(
+          file
+        );
 
       await AVDB.put(
         'media',
         {
           id,
-          name:file.name,
+
+          name:
+            file.name,
+
           type:
             file.type||
             (
@@ -2054,22 +2697,30 @@ async function importFiles(files){
                 :'mpeg'
               )
             ),
-          size:file.size,
+
+          size:
+            file.size,
+
           duration,
-          blob:file
+
+          blob:
+            file
         }
       );
 
       imported++;
 
       if(
-        !firstVideo &&
+        !firstVideo&&
         kind==='video'
       ){
+
         firstVideo={
           id,
           name:file.name,
-          type:file.type||'video/mp4',
+          type:
+            file.type||
+            'video/mp4',
           duration,
           blob:file
         };
@@ -2086,6 +2737,7 @@ async function importFiles(files){
   await refresh();
 
   if(firstVideo){
+
     loadLibraryPreview(
       firstVideo
     );
@@ -2114,7 +2766,8 @@ async function importFiles(files){
 
 function renderMusic(){
 
-  const list=$('musicList');
+  const list=
+    $('musicList');
 
   if(!list)return;
 
@@ -2124,9 +2777,12 @@ function renderMusic(){
     (m,i)=>{
 
       const d=
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
 
-      d.className='music-row';
+      d.className=
+        'music-row';
 
       d.innerHTML=`
         <span>
@@ -2140,16 +2796,23 @@ function renderMusic(){
         </button>
       `;
 
-      d.querySelector('button').onclick=
+      d.querySelector(
+        'button'
+      ).onclick=
         async()=>{
 
-          state.music.splice(i,1);
+          state.music.splice(
+            i,
+            1
+          );
 
           await saveState();
 
           renderMusic();
 
-          toast('Music removed');
+          toast(
+            'Music removed'
+          );
         };
 
       list.appendChild(d);
@@ -2164,10 +2827,14 @@ async function importMusic(files){
 
   if(!list.length)return;
 
-  for(const file of list){
+  for(
+    const file of list
+  ){
 
     const duration=
-      await mediaDuration(file);
+      await mediaDuration(
+        file
+      );
 
     const mid=
       crypto.randomUUID();
@@ -2184,13 +2851,15 @@ async function importMusic(files){
       }
     );
 
-    state.music.push({
-      mediaId:mid,
-      name:file.name,
-      duration,
-      volume:
-        +$('musicVol').value
-    });
+    state.music.push(
+      {
+        mediaId:mid,
+        name:file.name,
+        duration,
+        volume:
+          +$('musicVol').value
+      }
+    );
   }
 
   await saveState();
@@ -2213,7 +2882,9 @@ function renderSettings(){
     state.settings||{};
 
   $('speed').value=
-    s.rate??0;
+    normalizeSpeedSetting(
+      s.rate
+    );
 
   $('pitch').value=
     s.pitch??0;
@@ -2235,15 +2906,29 @@ function renderSettings(){
 
   updateLabels();
 
-  $('projectName').textContent=
-    state.name||
-    'Untitled Project';
+  const projectName=
+    $('projectName');
+
+  if(projectName){
+
+    projectName.textContent=
+      state.name||
+      'Untitled Project';
+  }
 }
 
 function updateLabels(){
 
-  $('speedValue').textContent=
-    $('speed').value+'%';
+  const speed=
+    $('speed');
+
+  if(speed){
+
+    $('speedValue').textContent=
+      normalizeSpeedSetting(
+        speed.value
+      )+'%';
+  }
 
   $('pitchValue').textContent=
     (
@@ -2255,13 +2940,16 @@ function updateLabels(){
     ' Hz';
 
   $('origVolValue').textContent=
-    $('origVol').value+'%';
+    $('origVol').value+
+    '%';
 
   $('addVolValue').textContent=
-    $('addVol').value+'%';
+    $('addVol').value+
+    '%';
 
   $('musicVolValue').textContent=
-    $('musicVol').value+'%';
+    $('musicVol').value+
+    '%';
 }
 
 
@@ -2271,12 +2959,13 @@ function updateLabels(){
 
 async function setupTTS(){
 
-  const langEl=$('language');
-  const voiceEl=$('voice');
+  const langEl=
+    $('language');
 
-  if(!langEl||!voiceEl){
-    return;
-  }
+  const voiceEl=
+    $('voice');
+
+  if(!langEl||!voiceEl)return;
 
   const populateLanguages=()=>{
 
@@ -2293,18 +2982,21 @@ async function setupTTS(){
 
     langEl.innerHTML='';
 
-    langs.forEach(lang=>{
+    langs.forEach(
+      lang=>{
 
-      const o=
-        document.createElement(
-          'option'
-        );
+        const o=
+          document.createElement(
+            'option'
+          );
 
-      o.value=lang;
-      o.textContent=lang;
+        o.value=lang;
 
-      langEl.appendChild(o);
-    });
+        o.textContent=lang;
+
+        langEl.appendChild(o);
+      }
+    );
 
     const preferred=
       state.settings.language||
@@ -2341,37 +3033,39 @@ async function setupTTS(){
 
     voiceEl.innerHTML='';
 
-    vs.forEach(v=>{
+    vs.forEach(
+      v=>{
 
-      const o=
-        document.createElement(
-          'option'
-        );
-
-      o.value=v;
-
-      const parts=
-        v.split('-');
-
-      const locale=
-        parts
-          .slice(0,2)
-          .join('-');
-
-      const name=
-        parts
-          .slice(2)
-          .join('-')
-          .replace(
-            /Neural$/,
-            ''
+        const o=
+          document.createElement(
+            'option'
           );
 
-      o.textContent=
-        `${name} — ${locale}`;
+        o.value=v;
 
-      voiceEl.appendChild(o);
-    });
+        const parts=
+          v.split('-');
+
+        const locale=
+          parts
+            .slice(0,2)
+            .join('-');
+
+        const name=
+          parts
+            .slice(2)
+            .join('-')
+            .replace(
+              /Neural$/,
+              ''
+            );
+
+        o.textContent=
+          `${name} — ${locale}`;
+
+        voiceEl.appendChild(o);
+      }
+    );
 
     voiceEl.value=
       vs.includes(
@@ -2391,14 +3085,11 @@ async function setupTTS(){
 
     fillVoices();
 
-    /*
-      Changing voice settings invalidates
-      any unsaved TTS draft.
-    */
-
     invalidateTTSDraft();
 
-    saveState().catch(()=>{});
+    saveState().catch(
+      ()=>{}
+    );
   };
 
   voiceEl.onchange=()=>{
@@ -2408,25 +3099,38 @@ async function setupTTS(){
 
     invalidateTTSDraft();
 
-    saveState().catch(()=>{});
+    saveState().catch(
+      ()=>{}
+    );
   };
 
   window.addEventListener(
     'audioverse:voices-updated',
     ()=>{
+
       populateLanguages();
-      saveState().catch(()=>{});
+
+      saveState().catch(
+        ()=>{}
+      );
     }
   );
 
   populateLanguages();
 
   EdgeTTS.loadVoices()
-    .then(()=>{
-      populateLanguages();
-      saveState().catch(()=>{});
-    })
-    .catch(()=>{});
+    .then(
+      ()=>{
+        populateLanguages();
+
+        saveState().catch(
+          ()=>{}
+        );
+      }
+    )
+    .catch(
+      ()=>{}
+    );
 }
 
 
@@ -2439,7 +3143,8 @@ function setTTSProgress(
   label='Generating voice…'
 ){
 
-  const wrap=$('ttsProgressWrap');
+  const wrap=
+    $('ttsProgressWrap');
 
   if(!wrap)return;
 
@@ -2462,28 +3167,25 @@ function setTTSProgress(
    TTS DRAFT MANAGEMENT
    ============================================================ */
 
-/*
-  A generated TTS file stays in memory as ttsBlob.
-
-  ttsDraft remembers exactly what produced it.
-
-  Therefore if the user changes:
-    - text
-    - voice
-    - speed
-    - pitch
-
-  the old generated audio will not accidentally
-  be imported as the new narration.
-*/
-
 function getCurrentTTSParameters(){
 
-  return {
-    text:$('ttsText')?.value||'',
-    voice:$('voice')?.value||'',
-    rate:+($('speed')?.value||0),
-    pitch:+($('pitch')?.value||0)
+  return{
+    text:
+      $('ttsText')?.value||'',
+
+    voice:
+      $('voice')?.value||'',
+
+    rate:
+      normalizeSpeedSetting(
+        $('speed')?.value
+      ),
+
+    pitch:
+      +(
+        $('pitch')?.value||
+        0
+      )
   };
 }
 
@@ -2492,32 +3194,58 @@ function invalidateTTSDraft(){
   ttsBlob=null;
   ttsDraft=null;
 
-  const audio=$('ttsAudio');
+  const audio=
+    $('ttsAudio');
 
-  if(audio){
+  if(!audio)return;
 
-    if(audio._audioverseURL){
+  /*
+    IMPORTANT:
+    Do not destroy the active project audio
+    merely because the TTS text/settings changed.
+  */
+  const active=
+    currentAudioMedia();
 
-      try{
-        URL.revokeObjectURL(
-          audio._audioverseURL
-        );
-      }catch{}
+  if(active){
 
-      audio._audioverseURL=null;
-    }
+    setAudioPreview(
+      active
+    );
+
+    return;
+  }
+
+  if(audio._audioverseURL){
 
     try{
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
+      URL.revokeObjectURL(
+        audio._audioverseURL
+      );
     }catch{}
+
+    audio._audioverseURL=null;
   }
+
+  try{
+
+    audio.pause();
+
+    audio.removeAttribute(
+      'src'
+    );
+
+    audio.load();
+
+  }catch{}
 }
 
 function isCurrentTTSDraft(){
 
-  if(!ttsBlob||!ttsDraft){
+  if(
+    !ttsBlob||
+    !ttsDraft
+  ){
     return false;
   }
 
@@ -2526,13 +3254,24 @@ function isCurrentTTSDraft(){
 
   return(
     ttsDraft.text===
-      current.text &&
+      current.text&&
+
     ttsDraft.voice===
-      current.voice &&
-    Number(ttsDraft.rate)===
-      Number(current.rate) &&
-    Number(ttsDraft.pitch)===
-      Number(current.pitch)
+      current.voice&&
+
+    normalizeSpeedSetting(
+      ttsDraft.rate
+    )===
+    normalizeSpeedSetting(
+      current.rate
+    )&&
+
+    Number(
+      ttsDraft.pitch
+    )===
+    Number(
+      current.pitch
+    )
   );
 }
 
@@ -2540,16 +3279,6 @@ function isCurrentTTSDraft(){
 /* ============================================================
    TTS CREATION
    ============================================================ */
-
-/*
-  Generate TTS and put it into the HTML5 player.
-
-  IMPORTANT:
-  This function does NOT regenerate audio when Use Audio
-  is pressed later.
-
-  The generated blob is kept in ttsBlob and reused.
-*/
 
 async function generateTTS(){
 
@@ -2570,7 +3299,9 @@ async function generateTTS(){
     $('voice').value;
 
   const rate=
-    +$('speed').value;
+    normalizeSpeedSetting(
+      $('speed').value
+    );
 
   const pitch=
     +$('pitch').value;
@@ -2584,10 +3315,6 @@ async function generateTTS(){
     'Generating voice…';
 
   try{
-
-    /*
-      EdgeTTS creates the actual MP3 blob.
-    */
 
     const blob=
       await EdgeTTS.synthesize(
@@ -2603,26 +3330,25 @@ async function generateTTS(){
       );
 
     if(!blob){
+
       throw new Error(
         'Voice generation returned no audio.'
       );
     }
 
     if(!(blob instanceof Blob)){
+
       throw new Error(
         'Voice generation returned invalid audio data.'
       );
     }
 
     if(blob.size<=0){
+
       throw new Error(
         'Generated audio file is empty.'
       );
     }
-
-    /*
-      Save the exact generated blob in memory.
-    */
 
     ttsBlob=blob;
 
@@ -2633,14 +3359,6 @@ async function generateTTS(){
       pitch,
       duration:0
     };
-
-    /*
-      THIS IS THE IMPORTANT PART.
-
-      Load the generated MP3 directly into
-      the HTML5 audio element and obtain its
-      actual browser duration.
-    */
 
     const dur=
       await loadBlobIntoHTML5Audio(
@@ -2654,12 +3372,8 @@ async function generateTTS(){
       );
     }
 
-    ttsDraft.duration=dur;
-
-    /*
-      Do not let an old end padding value
-      affect newly generated audio.
-    */
+    ttsDraft.duration=
+      dur;
 
     $('audioEnd').value='0';
 
@@ -2671,7 +3385,7 @@ async function generateTTS(){
       'Complete'
     );
 
-    return {
+    return{
       blob,
       duration:dur
     };
@@ -2696,24 +3410,17 @@ async function generateTTS(){
   }
 }
 
-
-/* ============================================================
-   IMPORT TTS INTO PROJECT
-   ============================================================ */
-
 async function importCurrentTTSDraft(){
 
   if(!isCurrentTTSDraft()){
 
-    /*
-      If there is no valid current draft,
-      generate it first.
-    */
-
     await generateTTS();
   }
 
-  if(!ttsBlob||!ttsDraft){
+  if(
+    !ttsBlob||
+    !ttsDraft
+  ){
 
     throw new Error(
       'No generated narration is available.'
@@ -2727,12 +3434,9 @@ async function importCurrentTTSDraft(){
     ttsDraft;
 
   let duration=
-    Number(draft.duration)||0;
-
-  /*
-    If for some reason the stored duration
-    is missing, ask HTML5 again.
-  */
+    Number(
+      draft.duration
+    )||0;
 
   if(!duration){
 
@@ -2748,7 +3452,8 @@ async function importCurrentTTSDraft(){
       );
     }
 
-    draft.duration=duration;
+    draft.duration=
+      duration;
   }
 
   const id=
@@ -2761,29 +3466,38 @@ async function importCurrentTTSDraft(){
     'Narration • '+
     now.toLocaleTimeString();
 
-  /*
-    Store the SAME blob that is currently
-    being previewed.
-
-    No second synthesis request.
-  */
-
   await AVDB.put(
     'media',
     {
       id,
+
       name,
-      type:'audio/mpeg',
-      size:blob.size,
+
+      type:
+        'audio/mpeg',
+
+      size:
+        blob.size,
+
       duration,
+
       blob,
 
       generated:true,
 
-      narrationText:draft.text,
-      voice:draft.voice,
-      rate:draft.rate,
-      pitch:draft.pitch
+      narrationText:
+        draft.text,
+
+      voice:
+        draft.voice,
+
+      rate:
+        normalizeSpeedSetting(
+          draft.rate
+        ),
+
+      pitch:
+        draft.pitch
     }
   );
 
@@ -2791,11 +3505,6 @@ async function importCurrentTTSDraft(){
     await AVDB.getAll(
       'media'
     );
-
-  /*
-    Attach this exact media item
-    to the project.
-  */
 
   await attachMediaAsAudio(
     id,
@@ -2812,11 +3521,6 @@ async function importCurrentTTSDraft(){
 
   return id;
 }
-
-
-/* ============================================================
-   MAIN TTS BUTTON FUNCTION
-   ============================================================ */
 
 async function doTTS(use=false){
 
@@ -2838,20 +3542,14 @@ async function doTTS(use=false){
     ?$('ttsUse')
     :$('ttsCreate');
 
-  busy(btn,true);
+  busy(
+    btn,
+    true
+  );
 
   try{
 
     if(use){
-
-      /*
-        USE AUDIO:
-
-        If the current generated TTS already matches
-        the current text/voice/speed/pitch, reuse it.
-
-        Otherwise generate once and then import it.
-      */
 
       setTTSProgress(
         3,
@@ -2863,16 +3561,35 @@ async function doTTS(use=false){
 
       await importCurrentTTSDraft();
 
-    }else{
-
       /*
-        CREATE AUDIO:
-
-        Generate only.
-
-        It becomes immediately available
-        in the HTML5 player for Preview.
+        Because this call originates from the user's
+        Use button click, the browser can normally allow
+        playback here.
       */
+      timelinePlaybackActive=true;
+
+      setTimelinePlayhead(
+        audioStartMs(),
+        {
+          preview:false,
+          scroll:false
+        }
+      );
+
+      await waitForHTML5AudioMetadata(
+        $('ttsAudio')
+      ).catch(
+        ()=>{}
+      );
+
+      playTimelineAudio();
+
+      if($('ttsStatus')){
+        $('ttsStatus').textContent=
+          'Narration imported and playing…';
+      }
+
+    }else{
 
       setTTSProgress(
         3,
@@ -2907,12 +3624,17 @@ async function doTTS(use=false){
 
   }finally{
 
-    busy(btn,false);
+    busy(
+      btn,
+      false
+    );
 
     setTimeout(
       ()=>{
         $('ttsProgressWrap')
-          ?.classList.add('hidden');
+          ?.classList.add(
+            'hidden'
+          );
       },
       900
     );
@@ -2928,7 +3650,9 @@ function currentAudioMedia(){
 
   return state.audio?.mediaId
     ?state.media.find(
-      m=>m.id===state.audio.mediaId
+      m=>
+        m.id===
+        state.audio.mediaId
     )
     :null;
 }
@@ -2936,8 +3660,8 @@ function currentAudioMedia(){
 function audioDurationMs(){
 
   return Number(
-    currentAudioMedia()?.duration ||
-    state.audio?.duration ||
+    currentAudioMedia()?.duration||
+    state.audio?.duration||
     0
   );
 }
@@ -3018,12 +3742,6 @@ async function attachMediaAsAudio(
 
   if(!m)return;
 
-  /*
-    Prefer stored duration.
-
-    If missing, use HTML5 duration.
-  */
-
   let dur=
     Number(m.duration)||0;
 
@@ -3067,6 +3785,11 @@ async function attachMediaAsAudio(
   $('audioStart').value='0';
   $('audioEnd').value='0';
 
+  /*
+    Stop anything currently playing.
+  */
+  pauseTimelineAudio();
+
   setAudioPreview(m);
 
   $('ttsStatus').textContent=
@@ -3079,8 +3802,74 @@ async function attachMediaAsAudio(
   await saveState();
 
   renderTimeline();
+  renderMedia();
 
   switchTab('audio');
+
+  /*
+    Make sure the browser has loaded the audio
+    before the user presses Preview.
+  */
+  await waitForHTML5AudioMetadata(
+    $('ttsAudio')
+  ).catch(
+    ()=>{}
+  );
+}
+
+
+/* ============================================================
+   DETACH AUDIO
+   ============================================================ */
+
+async function detachAudioFromProject(){
+
+  timelinePlaybackActive=false;
+
+  pauseTimelineAudio();
+
+  state.audio=null;
+
+  $('audioStart').value='0';
+  $('audioEnd').value='0';
+
+  const audio=
+    $('ttsAudio');
+
+  if(audio){
+
+    if(audio._audioverseURL){
+
+      try{
+        URL.revokeObjectURL(
+          audio._audioverseURL
+        );
+      }catch{}
+
+      audio._audioverseURL=null;
+    }
+
+    try{
+
+      audio.pause();
+
+      audio.removeAttribute(
+        'src'
+      );
+
+      audio.load();
+
+    }catch{}
+  }
+
+  await saveState();
+
+  renderTimeline();
+  renderMedia();
+
+  toast(
+    'Active audio removed from the project.'
+  );
 }
 
 
@@ -3120,7 +3909,9 @@ function syncAudioPreview(){
 
     loadBlobIntoHTML5Audio(
       ttsBlob
-    ).catch(()=>{});
+    ).catch(
+      ()=>{}
+    );
   }
 }
 
@@ -3131,7 +3922,8 @@ function syncAudioPreview(){
 
 async function previewTTS(){
 
-  const audio=$('ttsAudio');
+  const audio=
+    $('ttsAudio');
 
   if(!audio){
 
@@ -3146,50 +3938,31 @@ async function previewTTS(){
   try{
 
     /*
-      If a current generated draft exists,
-      make sure the player contains that exact blob.
+      If an active project audio exists,
+      it is the primary preview source.
     */
+    const active=
+      currentAudioMedia();
 
-    if(ttsBlob){
+    if(active){
 
-      if(
-        !audio.currentSrc ||
-        audio.currentSrc!==audio._audioverseURL
-      ){
+      setAudioPreview(
+        active
+      );
 
-        await loadBlobIntoHTML5Audio(
-          ttsBlob
-        );
-      }
+      await waitForHTML5AudioMetadata(
+        audio
+      );
+
+    }else if(ttsBlob){
+
+      await loadBlobIntoHTML5Audio(
+        ttsBlob
+      );
 
     }else{
 
-      /*
-        If no temporary TTS exists,
-        preview the project's active audio.
-      */
-
-      const m=
-        currentAudioMedia();
-
-      if(m){
-
-        setAudioPreview(m);
-
-        await waitForHTML5AudioMetadata(
-          audio
-        );
-
-      }else{
-
-        /*
-          No audio exists yet.
-
-          Generate it.
-        */
-
-        await generateTTS();
-      }
+      await generateTTS();
     }
 
     audio.currentTime=0;
@@ -3206,6 +3979,8 @@ async function previewTTS(){
           )/100
         )
       );
+
+    timelinePlaybackActive=false;
 
     await audio.play();
 
@@ -3253,7 +4028,9 @@ $('narrationInput').onchange=
         crypto.randomUUID();
 
       const duration=
-        await mediaDuration(f);
+        await mediaDuration(
+          f
+        );
 
       if(!duration){
 
@@ -3267,7 +4044,9 @@ $('narrationInput').onchange=
         {
           id,
           name:f.name,
-          type:f.type||'audio/mpeg',
+          type:
+            f.type||
+            'audio/mpeg',
           size:f.size,
           duration,
           blob:f
@@ -3279,7 +4058,9 @@ $('narrationInput').onchange=
           'media'
         );
 
-      await useImportedAudio(id);
+      await useImportedAudio(
+        id
+      );
 
       renderMedia();
 
@@ -3342,50 +4123,25 @@ $('musicInput').onchange=e=>
 $('mediaSearch').oninput=
   renderMedia;
 
+$('ttsCreate').onclick=
+  async()=>{
 
-/*
-  CREATE:
-  Generate TTS and make it available
-  in the HTML5 preview player.
-*/
-
-$('ttsCreate').onclick=async()=>{
-
-  try{
-
-    await doTTS(false);
-
-  }catch(e){
-
-    console.error(e);
-  }
-};
-
-
-/*
-  PREVIEW:
-  Play the exact current TTS blob
-  using HTML5 audio.
-*/
+    try{
+      await doTTS(false);
+    }catch(e){
+      console.error(e);
+    }
+  };
 
 $('ttsPreview').onclick=
   previewTTS;
-
-
-/*
-  USE AUDIO:
-  Import the exact generated blob.
-*/
 
 $('ttsUse').onclick=
   async()=>{
 
     try{
-
       await doTTS(true);
-
     }catch(e){
-
       console.error(e);
     }
   };
@@ -3398,43 +4154,128 @@ $('ttsUse').onclick=
 $('exportBtn').onclick=
   exportProject;
 
-$('playBtn').onclick=()=>{
 
-  const v=$('previewVideo');
+/*
+  Main synchronized Play/Pause button.
+*/
+$('playBtn').onclick=async()=>{
+
+  const v=
+    $('previewVideo');
+
+  const audio=
+    $('ttsAudio');
 
   if(!v)return;
 
-  if(v.paused){
+  if(
+    timelinePlaybackActive
+  ){
 
-    v.play().catch(()=>{});
+    timelinePlaybackActive=false;
 
-  }else{
+    try{
+      v.pause();
+    }catch{}
 
-    v.pause();
+    pauseTimelineAudio();
+
+    $('playBtn').textContent='▶';
+
+    return;
   }
 
-  $('playBtn').textContent=
-    v.paused
-    ?'▶'
-    :'❚❚';
+  /*
+    Start synchronized timeline playback.
+  */
+  timelinePlaybackActive=true;
+
+  syncTimelineAudio();
+
+  if(state.audio){
+
+    const target=
+      timelineAudioTargetMs();
+
+    if(target!==null){
+
+      playTimelineAudio();
+    }
+  }
+
+  if(v.src){
+
+    /*
+      Position video according to timeline playhead.
+    */
+    const hit=
+      clipAtTimelineMs(
+        timelinePlayheadMs
+      );
+
+    if(hit){
+
+      try{
+
+        v.currentTime=
+          (
+            hit.it.inMs+
+            hit.offset
+          )/1000;
+
+      }catch{}
+    }
+
+    v.play().catch(
+      ()=>{
+        timelinePlaybackActive=false;
+      }
+    );
+
+  }else if(audio&&state.audio){
+
+    audio.play().catch(
+      ()=>{
+        timelinePlaybackActive=false;
+      }
+    );
+  }
+
+  $('playBtn').textContent='❚❚';
 };
 
 $('stopBtn').onclick=()=>{
 
-  const v=$('previewVideo');
+  timelinePlaybackActive=false;
 
-  if(!v)return;
+  const v=
+    $('previewVideo');
 
-  v.pause();
+  if(v){
 
-  try{
-    v.currentTime=0;
-  }catch{}
+    try{
+      v.pause();
+      v.currentTime=0;
+    }catch{}
+  }
+
+  stopTimelineAudio();
+
+  setTimelinePlayhead(
+    0,
+    {
+      preview:false,
+      scroll:false
+    }
+  );
+
+  $('playBtn').textContent='▶';
 };
 
 $('prevBtn').onclick=()=>{
 
-  const v=$('previewVideo');
+  const v=
+    $('previewVideo');
 
   if(!v)return;
 
@@ -3443,11 +4284,27 @@ $('prevBtn').onclick=()=>{
       0,
       v.currentTime-5
     );
+
+  if(
+    state.timeline.length
+  ){
+
+    setTimelinePlayhead(
+      timelinePlayheadMs-5000,
+      {
+        preview:false,
+        scroll:false
+      }
+    );
+
+    seekTimelineAudio();
+  }
 };
 
 $('nextBtn').onclick=()=>{
 
-  const v=$('previewVideo');
+  const v=
+    $('previewVideo');
 
   if(!v)return;
 
@@ -3456,6 +4313,21 @@ $('nextBtn').onclick=()=>{
       v.duration||0,
       v.currentTime+5
     );
+
+  if(
+    state.timeline.length
+  ){
+
+    setTimelinePlayhead(
+      timelinePlayheadMs+5000,
+      {
+        preview:false,
+        scroll:false
+      }
+    );
+
+    seekTimelineAudio();
+  }
 };
 
 
@@ -3465,7 +4337,8 @@ $('nextBtn').onclick=()=>{
 
 $('previewVideo').ontimeupdate=()=>{
 
-  const v=$('previewVideo');
+  const v=
+    $('previewVideo');
 
   if(!v)return;
 
@@ -3493,8 +4366,9 @@ $('previewVideo').ontimeupdate=()=>{
     );
 
   if(
-    hit &&
-    state.selected===hit.it.id &&
+    hit&&
+    state.selected===
+      hit.it.id&&
     !playheadDragging
   ){
 
@@ -3548,16 +4422,51 @@ $('previewVideo').ontimeupdate=()=>{
         timelinePlayheadMs/1000
       ).toFixed(1);
   }
+
+  /*
+    Always keep narration synchronized
+    with the current timeline playhead.
+  */
+  if(
+    timelinePlaybackActive
+  ){
+
+    syncTimelineAudio();
+
+    if(
+      state.audio &&
+      timelineAudioTargetMs()!==null
+    ){
+
+      playTimelineAudio();
+    }
+  }
+};
+
+$('previewVideo').onended=()=>{
+
+  if(
+    timelinePlaybackActive
+  ){
+
+    timelinePlaybackActive=false;
+
+    pauseTimelineAudio();
+
+    $('playBtn').textContent='▶';
+  }
 };
 
 $('seek').oninput=()=>{
 
-  const v=$('previewVideo');
+  const v=
+    $('previewVideo');
 
   if(
-    v &&
+    v&&
     v.duration
   ){
+
     v.currentTime=
       v.duration*
       $('seek').value/
@@ -3565,13 +4474,75 @@ $('seek').oninput=()=>{
   }
 };
 
+$('seek').onchange=()=>{
+
+  const v=
+    $('previewVideo');
+
+  if(
+    v&&
+    v.duration
+  ){
+
+    /*
+      The seek control is for the current preview clip.
+      Also keep the timeline audio reasonably synchronized.
+    */
+    if(state.timeline.length){
+
+      const hit=
+        clipAtTimelineMs(
+          timelinePlayheadMs
+        );
+
+      if(hit){
+
+        let start=0;
+
+        for(
+          const x of state.timeline
+        ){
+
+          if(x.id===hit.it.id)break;
+
+          start+=
+            Math.max(
+              0,
+              x.outMs-x.inMs
+            );
+        }
+
+        const rel=
+          v.currentTime*1000-
+          hit.it.inMs;
+
+        setTimelinePlayhead(
+          start+
+          Math.max(
+            0,
+            rel
+          ),
+          {
+            preview:false,
+            scroll:false
+          }
+        );
+
+        seekTimelineAudio();
+      }
+    }
+  }
+};
+
 $('muteBtn').onclick=()=>{
 
-  const v=$('previewVideo');
+  const v=
+    $('previewVideo');
 
   if(!v)return;
 
-  v.muted=!v.muted;
+  v.muted=
+    !v.muted;
 
   $('muteBtn').textContent=
     v.muted
@@ -3587,13 +4558,11 @@ $('timelineFullscreen').onclick=()=>
   document.documentElement
     .requestFullscreen?.();
 
-$('timelineVolume').oninput=
-  e=>
-    $('previewVideo').volume=
-      e.target.value/100;
+$('timelineVolume').oninput=e=>
+  $('previewVideo').volume=
+    e.target.value/100;
 
 $('timelineMute').onclick=()=>{
-
   $('previewVideo').muted=
     !$('previewVideo').muted;
 };
@@ -3611,47 +4580,68 @@ $('timelineMute').onclick=()=>{
   'musicVol',
   'audioStart',
   'audioEnd'
-].forEach(id=>{
+].forEach(
+  id=>{
 
-  const el=$(id);
+    const el=$(id);
 
-  if(!el)return;
+    if(!el)return;
 
-  el.oninput=()=>{
+    el.oninput=()=>{
 
-    if(
-      id==='addVol' &&
-      $('ttsAudio')
-    ){
+      if(
+        id==='speed'
+      ){
 
-      $('ttsAudio').volume=
-        (
-          +$('addVol').value||
-          100
-        )/100;
-    }
+        el.value=
+          normalizeSpeedSetting(
+            el.value
+          );
 
-    /*
-      Changing TTS parameters invalidates
-      the current generated draft.
+        /*
+          Changing TTS speed invalidates only
+          the temporary TTS draft.
+        */
+        invalidateTTSDraft();
+      }
 
-      Text is handled separately below.
-    */
+      if(
+        id==='pitch'
+      ){
 
-    if(
-      id==='speed'||
-      id==='pitch'
-    ){
-      invalidateTTSDraft();
-    }
+        invalidateTTSDraft();
+      }
 
-    updateLabels();
+      if(
+        id==='addVol'&&
+        $('ttsAudio')
+      ){
 
-    saveState();
+        $('ttsAudio').volume=
+          (
+            +$('addVol').value||
+            100
+          )/100;
+      }
 
-    renderTimeline();
-  };
-});
+      updateAudioStateFromControls();
+
+      updateLabels();
+
+      saveState().catch(
+        ()=>{}
+      );
+
+      renderTimeline();
+
+      /*
+        Changing audio timing immediately updates
+        audio position to the new timeline location.
+      */
+      syncTimelineAudio();
+    };
+  }
+);
 
 
 /* ============================================================
@@ -3670,26 +4660,28 @@ $('ttsText')?.addEventListener(
    DELETE SELECTED CLIP
    ============================================================ */
 
-$('deleteBtn').onclick=async()=>{
+$('deleteBtn').onclick=
+  async()=>{
 
-  if(!state.selected){
-    return;
-  }
+    if(!state.selected)return;
 
-  state.timeline=
-    state.timeline.filter(
-      x=>x.id!==state.selected
+    state.timeline=
+      state.timeline.filter(
+        x=>
+          x.id!==state.selected
+      );
+
+    state.selected=null;
+
+    await saveState();
+
+    renderTimeline();
+    renderMedia();
+
+    toast(
+      'Clip removed'
     );
-
-  state.selected=null;
-
-  await saveState();
-
-  renderTimeline();
-  renderMedia();
-
-  toast('Clip removed');
-};
+  };
 
 
 /* ============================================================
@@ -3717,7 +4709,7 @@ $('splitBtn').onclick=()=>{
     );
 
   if(
-    !hit ||
+    !hit||
     hit.it.id!==it.id
   ){
 
@@ -3733,8 +4725,9 @@ $('splitBtn').onclick=()=>{
     )*100;
 
   if(
-    rel<=0 ||
-    rel>=it.outMs-it.inMs
+    rel<=0||
+    rel>=
+      it.outMs-it.inMs
   ){
 
     return toast(
@@ -3804,10 +4797,15 @@ $('newProject').onclick=
       )
     ){
 
+      timelinePlaybackActive=false;
+
+      pauseTimelineAudio();
+
       state={
         ...state,
 
-        name:'Untitled Project',
+        name:
+          'Untitled Project',
 
         timeline:[],
 
@@ -3864,9 +4862,15 @@ $('clearLibrary').onclick=
       )
     ){
 
+      timelinePlaybackActive=false;
+
+      pauseTimelineAudio();
+
       for(
-        const m of await AVDB.getAll('media')
+        const m of
+        await AVDB.getAll('media')
       ){
+
         await AVDB.del(
           'media',
           m.id
@@ -3907,45 +4911,42 @@ $('focusText').onclick=()=>{
    TABS
    ============================================================ */
 
-document
-  .querySelectorAll('.tab')
-  .forEach(
-    b=>
-      b.onclick=()=>
-        switchTab(
-          b.dataset.tab
-        )
-  );
+document.querySelectorAll(
+  '.tab'
+).forEach(
+  b=>
+    b.onclick=
+      ()=>switchTab(
+        b.dataset.tab
+      )
+);
 
 function switchTab(name){
 
-  document
-    .querySelectorAll('.tab')
-    .forEach(
-      b=>
-        b.classList.toggle(
-          'active',
-          b.dataset.tab===name
-        )
-    );
+  document.querySelectorAll(
+    '.tab'
+  ).forEach(
+    b=>
+      b.classList.toggle(
+        'active',
+        b.dataset.tab===name
+      )
+  );
 
-  $('audioTab')
-    .classList.toggle(
-      'hidden',
-      name!=='audio'
-    );
+  $('audioTab').classList.toggle(
+    'hidden',
+    name!=='audio'
+  );
 
-  $('textTab')
-    .classList.toggle(
-      'hidden',
-      name!=='text'
-    );
+  $('textTab').classList.toggle(
+    'hidden',
+    name!=='text'
+  );
 
-  $('musicTab')
-    .classList.toggle(
-      'hidden',
-      name!=='music'
-    );
+  $('musicTab').classList.toggle(
+    'hidden',
+    name!=='music'
+  );
 }
 
 
@@ -3958,7 +4959,8 @@ function updateStorage(){
   const bytes=
     state.media.reduce(
       (n,m)=>
-        n+(m.size||0),
+        n+
+        (m.size||0),
       0
     );
 
@@ -3976,17 +4978,21 @@ function updateStorage(){
    BUTTON RIPPLE
    ============================================================ */
 
-document
-  .querySelectorAll('button')
-  .forEach(b=>{
+document.querySelectorAll(
+  'button'
+).forEach(
+  b=>{
 
-    b.classList.add('ripple');
+    b.classList.add(
+      'ripple'
+    );
 
     b.addEventListener(
       'click',
       ripple
     );
-  });
+  }
+);
 
 
 /* ============================================================
@@ -4030,12 +5036,24 @@ $('playheadTime').oninput=e=>{
       save:false
     }
   );
+
+  /*
+    If currently playing, immediately
+    move narration to the new position.
+  */
+  if(
+    timelinePlaybackActive
+  ){
+
+    playTimelineAudio();
+  }
 };
 
 $('playheadTime').onchange=()=>{
 
-  saveState()
-    .catch(()=>{});
+  saveState().catch(
+    ()=>{}
+  );
 };
 
 
@@ -4058,77 +5076,73 @@ function timelinePointToMs(e){
 
   return Math.max(
     0,
-    x/timelineZoom*1000
+    x/timelineZoom*
+    1000
   );
 }
 
-$('timelineCanvas')
-  .addEventListener(
-    'pointerdown',
-    e=>{
+$('timelineCanvas').addEventListener(
+  'pointerdown',
+  e=>{
 
-      if(
-        e.target.closest(
-          '.clip-block'
-        )
-      ){
-        return;
+    if(
+      e.target.closest(
+        '.clip-block'
+      )
+    ){
+      return;
+    }
+
+    playheadDragging=true;
+
+    const ms=
+      timelinePointToMs(e);
+
+    setTimelinePlayhead(
+      ms,
+      {
+        preview:true,
+        scroll:false
       }
+    );
 
-      playheadDragging=true;
-
-      const ms=
-        timelinePointToMs(e);
-
-      setTimelinePlayhead(
-        ms,
-        {
-          preview:true,
-          scroll:false
-        }
+    $('timelinePlayhead')
+      .setPointerCapture?.(
+        e.pointerId
       );
+  }
+);
 
-      $('timelinePlayhead')
-        .setPointerCapture?.(
-          e.pointerId
-        );
-    }
-  );
+$('timelinePlayhead').addEventListener(
+  'pointerdown',
+  e=>{
 
-$('timelinePlayhead')
-  .addEventListener(
-    'pointerdown',
-    e=>{
+    e.stopPropagation();
 
-      e.stopPropagation();
+    playheadDragging=true;
 
-      playheadDragging=true;
+    $('timelinePlayhead')
+      .setPointerCapture?.(
+        e.pointerId
+      );
+  }
+);
 
-      $('timelinePlayhead')
-        .setPointerCapture?.(
-          e.pointerId
-        );
-    }
-  );
+$('timelineCanvas').addEventListener(
+  'pointermove',
+  e=>{
 
-$('timelineCanvas')
-  .addEventListener(
-    'pointermove',
-    e=>{
+    if(!playheadDragging)return;
 
-      if(!playheadDragging){
-        return;
+    setTimelinePlayhead(
+      timelinePointToMs(e),
+      {
+        preview:true,
+        scroll:false
       }
-
-      setTimelinePlayhead(
-        timelinePointToMs(e),
-        {
-          preview:true,
-          scroll:false
-        }
-      );
-    }
-  );
+    );
+  }
+);
 
 window.addEventListener(
   'pointerup',
@@ -4138,72 +5152,92 @@ window.addEventListener(
 
       playheadDragging=false;
 
-      saveState()
-        .catch(()=>{});
+      saveState().catch(
+        ()=>{}
+      );
+
+      if(
+        timelinePlaybackActive
+      ){
+        playTimelineAudio();
+      }
     }
   }
 );
 
-$('timelineScroll')
-  .addEventListener(
-    'wheel',
-    e=>{
+$('timelineScroll').addEventListener(
+  'wheel',
+  e=>{
 
-      if(e.shiftKey){
+    if(e.shiftKey){
 
-        e.preventDefault();
+      e.preventDefault();
 
-        $('timelineScroll').scrollLeft+=
-          e.deltaY||
-          e.deltaX;
-      }
-
-    },
-    {
-      passive:false
+      $('timelineScroll').scrollLeft+=
+        e.deltaY||
+        e.deltaX;
     }
-  );
+  },
+  {
+    passive:false
+  }
+);
 
-$('timelinePlayhead')
-  .addEventListener(
-    'keydown',
-    e=>{
+$('timelinePlayhead').addEventListener(
+  'keydown',
+  e=>{
 
-      if(e.key==='ArrowLeft'){
+    if(
+      e.key==='ArrowLeft'
+    ){
 
-        e.preventDefault();
+      e.preventDefault();
 
-        setTimelinePlayhead(
-          timelinePlayheadMs-
-          (
-            e.shiftKey
-            ?1000
-            :100
-          ),
-          {
-            preview:true
-          }
-        );
-      }
+      setTimelinePlayhead(
+        timelinePlayheadMs-
+        (
+          e.shiftKey
+          ?1000
+          :100
+        ),
+        {
+          preview:true
+        }
+      );
 
-      if(e.key==='ArrowRight'){
-
-        e.preventDefault();
-
-        setTimelinePlayhead(
-          timelinePlayheadMs+
-          (
-            e.shiftKey
-            ?1000
-            :100
-          ),
-          {
-            preview:true
-          }
-        );
+      if(
+        timelinePlaybackActive
+      ){
+        playTimelineAudio();
       }
     }
-  );
+
+    if(
+      e.key==='ArrowRight'
+    ){
+
+      e.preventDefault();
+
+      setTimelinePlayhead(
+        timelinePlayheadMs+
+        (
+          e.shiftKey
+          ?1000
+          :100
+        ),
+        {
+          preview:true
+        }
+      );
+
+      if(
+        timelinePlaybackActive
+      ){
+        playTimelineAudio();
+      }
+    }
+  }
+);
 
 
 /* ============================================================
@@ -4248,6 +5282,7 @@ initTheme();
     if(
       await navigator.storage?.persist
     ){
+
       await navigator.storage.persist();
     }
 
@@ -4261,11 +5296,15 @@ initTheme();
 
 })();
 
-if('serviceWorker' in navigator){
+if(
+  'serviceWorker' in navigator
+){
 
   navigator.serviceWorker
     .register('./sw.js')
-    .catch(()=>{});
+    .catch(
+      ()=>{}
+    );
 }
 
 
@@ -4299,8 +5338,11 @@ async function getFFmpeg(){
           'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/+esm'
         );
 
-      const {FFmpeg}=mod;
-      const {toBlobURL}=util;
+      const {FFmpeg}=
+        mod;
+
+      const {toBlobURL}=
+        util;
 
       const ff=
         new FFmpeg();
@@ -4372,8 +5414,13 @@ function cloneTimelineItem(
 
   return{
     ...it,
-    id:crypto.randomUUID(),
-    outMs:it.inMs+d,
+
+    id:
+      crypto.randomUUID(),
+
+    outMs:
+      it.inMs+d,
+
     duration:d
   };
 }
@@ -4387,7 +5434,8 @@ async function duplicateSelectedClip(){
 
   const idx=
     state.timeline.findIndex(
-      x=>x.id===state.selected
+      x=>
+        x.id===state.selected
     );
 
   if(idx<0){
@@ -4473,7 +5521,8 @@ async function fitTimelineToAudio(){
       current-target;
 
     for(
-      let i=state.timeline.length-1;
+      let i=
+        state.timeline.length-1;
       i>=0&&excess>0;
       i--
     ){
@@ -4497,7 +5546,8 @@ async function fitTimelineToAudio(){
 
       }else{
 
-        it.outMs-=excess;
+        it.outMs-=
+          excess;
 
         it.duration=
           timelineItemDuration(it);
@@ -4535,7 +5585,7 @@ async function fitTimelineToAudio(){
     let i=0;
 
     while(
-      current<target &&
+      current<target&&
       i<100000
     ){
 
@@ -4604,7 +5654,9 @@ function askRepeatableClips(items){
     resolve=>{
 
       const overlay=
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
 
       overlay.style.cssText=
         `
@@ -4618,7 +5670,9 @@ function askRepeatableClips(items){
         `;
 
       const box=
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
 
       box.style.cssText=
         `
@@ -4646,7 +5700,9 @@ function askRepeatableClips(items){
         `;
 
       const list=
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
 
       list.style.display='grid';
       list.style.gap='8px';
@@ -4655,7 +5711,9 @@ function askRepeatableClips(items){
         (it,i)=>{
 
           const row=
-            document.createElement('label');
+            document.createElement(
+              'label'
+            );
 
           row.style.cssText=
             `
@@ -4691,7 +5749,9 @@ function askRepeatableClips(items){
       );
 
       const actions=
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
 
       actions.style.cssText=
         `
@@ -4800,7 +5860,9 @@ function askRepeatableClips(items){
 function showQueuePopup(){
 
   const overlay=
-    document.createElement('div');
+    document.createElement(
+      'div'
+    );
 
   overlay.style.cssText=
     `
@@ -4814,7 +5876,9 @@ function showQueuePopup(){
     `;
 
   const box=
-    document.createElement('div');
+    document.createElement(
+      'div'
+    );
 
   box.style.cssText=
     `
@@ -4841,7 +5905,9 @@ function showQueuePopup(){
     `;
 
   const list=
-    document.createElement('ol');
+    document.createElement(
+      'ol'
+    );
 
   list.style.lineHeight='1.8';
 
@@ -4849,7 +5915,9 @@ function showQueuePopup(){
     it=>{
 
       const li=
-        document.createElement('li');
+        document.createElement(
+          'li'
+        );
 
       li.textContent=
         `${it.name} — ${fmtPrecise(
@@ -4861,7 +5929,9 @@ function showQueuePopup(){
   );
 
   const close=
-    document.createElement('button');
+    document.createElement(
+      'button'
+    );
 
   close.textContent='Close';
 
@@ -4956,35 +6026,41 @@ function generateApproxSRT(){
     audioStartMs();
 
   return lines
-    .map(block=>{
+    .map(
+      block=>{
 
-      const a=
-        block.split('\n');
+        const a=
+          block.split('\n');
 
-      if(a.length<3){
-        return block;
-      }
+        if(a.length<3){
+          return block;
+        }
 
-      const num=a[0];
-      const times=a[1];
-      const caption=a[2];
+        const num=
+          a[0];
 
-      const [s,e]=
-        times.split(
-          ' --> '
+        const times=
+          a[1];
+
+        const caption=
+          a[2];
+
+        const [s,e]=
+          times.split(
+            ' --> '
+          );
+
+        return(
+          `${num}\n`+
+          `${srtTime(
+            parseSrtTime(s)+shift
+          )} --> ${srtTime(
+            parseSrtTime(e)+shift
+          )}\n`+
+          `${caption}\n`
         );
-
-      return(
-        `${num}\n`+
-        `${srtTime(
-          parseSrtTime(s)+shift
-        )} --> ${srtTime(
-          parseSrtTime(e)+shift
-        )}\n`+
-        `${caption}\n`
-      );
-
-    })
+      }
+    )
     .join('\n');
 }
 
@@ -5098,7 +6174,9 @@ async function createSRT(){
 
             rate:
               m.rate??
-              +$('speed').value,
+              normalizeSpeedSetting(
+                $('speed').value
+              ),
 
             pitch:
               m.pitch??
@@ -5184,12 +6262,17 @@ async function downloadSRT(){
     );
 
   const a=
-    document.createElement('a');
+    document.createElement(
+      'a'
+    );
 
   const url=
-    URL.createObjectURL(blob);
+    URL.createObjectURL(
+      blob
+    );
 
   a.href=url;
+
   a.download=name;
 
   a.click();
@@ -5226,7 +6309,9 @@ async function chooseExportPath(
                 'MP4 video',
 
               accept:{
-                'video/mp4':['.mp4']
+                'video/mp4':[
+                  '.mp4'
+                ]
               }
             }
           ]
@@ -5238,6 +6323,7 @@ async function chooseExportPath(
       if(
         e?.name==='AbortError'
       ){
+
         return null;
       }
     }
@@ -5265,12 +6351,17 @@ async function writeExportHandle(
   }
 
   const a=
-    document.createElement('a');
+    document.createElement(
+      'a'
+    );
 
   const url=
-    URL.createObjectURL(blob);
+    URL.createObjectURL(
+      blob
+    );
 
   a.href=url;
+
   a.download=name;
 
   a.click();
@@ -5362,10 +6453,10 @@ async function exportProject(){
       state.name||
       'AudioVerse Project'
     )
-    .replace(
-      /[\\/:*?"<>|]/g,
-      '_'
-    )||
+      .replace(
+        /[\\/:*?"<>|]/g,
+        '_'
+      )||
     'AudioVerse Project';
 
   const finalName=
@@ -5377,19 +6468,23 @@ async function exportProject(){
     );
 
   if(
-    !handle &&
-    !window.showSaveFilePicker &&
+    !handle&&
+    !window.showSaveFilePicker&&
     !confirm(
       'This browser cannot show a native Save As dialog. Export will download the MP4 to your Downloads folder. Continue?'
     )
   ){
+
     return;
   }
 
   const btn=
     $('exportBtn');
 
-  busy(btn,true);
+  busy(
+    btn,
+    true
+  );
 
   $('workerStatus').innerHTML=
     '<i></i> Processing';
@@ -5415,7 +6510,9 @@ async function exportProject(){
 
       const m=
         state.media.find(
-          x=>x.id===it.mediaId
+          x=>
+            x.id===
+            it.mediaId
         );
 
       if(!m){
@@ -5448,19 +6545,23 @@ async function exportProject(){
 
       const segArgs=[
         '-ss',
+
         (
           it.inMs/1000
         ).toFixed(3),
 
         '-i',
+
         input,
 
         '-t',
+
         (
           timelineItemDuration(it)/1000
         ).toFixed(3),
 
         '-vf',
+
         'scale=trunc(iw/2)*2:trunc(ih/2)*2',
 
         '-c:v',
@@ -5498,11 +6599,13 @@ async function exportProject(){
         await ff.exec(
           [
             '-ss',
+
             (
               it.inMs/1000
             ).toFixed(3),
 
             '-i',
+
             input,
 
             '-f',
@@ -5512,11 +6615,13 @@ async function exportProject(){
             'anullsrc=r=48000:cl=stereo',
 
             '-t',
+
             (
               timelineItemDuration(it)/1000
             ).toFixed(3),
 
             '-vf',
+
             'scale=trunc(iw/2)*2:trunc(ih/2)*2',
 
             '-map',
@@ -5649,7 +6754,9 @@ async function exportProject(){
 
       const mm=
         state.media.find(
-          x=>x.id===music.mediaId
+          x=>
+            x.id===
+            music.mediaId
         );
 
       if(!mm)continue;
@@ -5744,13 +6851,28 @@ async function exportProject(){
         'final.mp4'
       );
 
+    /*
+      IMPORTANT FIX:
+      FFmpeg returns a Uint8Array.
+      Using data.buffer can include bytes outside
+      the actual Uint8Array view.
+
+      Use the Uint8Array itself.
+    */
     const blob=
       new Blob(
-        [data.buffer],
+        [data],
         {
           type:'video/mp4'
         }
       );
+
+    if(!blob.size){
+
+      throw new Error(
+        'FFmpeg produced an empty MP4.'
+      );
+    }
 
     await writeExportHandle(
       handle,
@@ -5785,7 +6907,10 @@ async function exportProject(){
 
   }finally{
 
-    busy(btn,false);
+    busy(
+      btn,
+      false
+    );
   }
 }
 
@@ -5834,7 +6959,9 @@ $('ttsAudio')?.addEventListener(
     if(!audio)return;
 
     const d=
-      Number(audio.duration);
+      Number(
+        audio.duration
+      );
 
     if(
       Number.isFinite(d)&&
@@ -5851,13 +6978,107 @@ $('ttsAudio')?.addEventListener(
 );
 
 $('ttsAudio')?.addEventListener(
+  'timeupdate',
+  ()=>{
+
+    if(
+      !timelinePlaybackActive||
+      !state.audio
+    ){
+      return;
+    }
+
+    /*
+      Audio can continue slightly ahead/behind
+      the video. Keep the timeline playhead aligned
+      to the actual narration position.
+    */
+    const target=
+      timelineAudioTargetMs();
+
+    if(target===null){
+      return;
+    }
+
+    const timelinePosition=
+      audioStartMs()+
+      (
+        $('ttsAudio').currentTime*
+        1000
+      );
+
+    const total=
+      timelineTotalMs();
+
+    if(total>0){
+
+      timelinePlayheadMs=
+        Math.max(
+          0,
+          Math.min(
+            total,
+            Math.round(
+              timelinePosition/100
+            )*100
+          )
+        );
+
+      const ph=
+        $('timelinePlayhead');
+
+      if(ph){
+
+        ph.style.left=
+          (
+            88+
+            timelinePlayheadMs/1000*
+            timelineZoom
+          )+'px';
+      }
+
+      if($('playheadTime')){
+
+        $('playheadTime').value=
+          (
+            timelinePlayheadMs/1000
+          ).toFixed(1);
+      }
+    }
+  }
+);
+
+$('ttsAudio')?.addEventListener(
   'ended',
   ()=>{
 
-    if($('ttsStatus')){
+    if(
+      $('ttsStatus')
+    ){
 
       $('ttsStatus').textContent=
         'Audio preview finished.';
+    }
+
+    /*
+      If this was synchronized playback,
+      stop the main playback state.
+    */
+    if(
+      timelinePlaybackActive
+    ){
+
+      timelinePlaybackActive=false;
+
+      const v=
+        $('previewVideo');
+
+      try{
+        v?.pause();
+      }catch{}
+
+      if($('playBtn')){
+        $('playBtn').textContent='▶';
+      }
     }
   }
 );
