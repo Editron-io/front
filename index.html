@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f9fc">
+<title>AudioVerse Studio</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><img src="assets/audioverse_icon.png" alt="AudioVerse"><div><strong>Audio<span>Verse</span></strong><small>STUDIO</small></div></div>
+  <div class="project"><span>PROJECT</span><strong id="projectName">Horror Story 01</strong></div>
+  <div class="top-actions">
+    <button id="newProject" class="top-btn"><i>＋</i> New</button>
+    <button id="loadProject" class="top-btn"><i>▣</i> Open</button>
+    <button id="saveProject" class="top-btn"><i>▣</i> Save</button>
+    <button id="themeBtn" class="top-btn theme-btn" title="Toggle dark/light mode"><i id="themeIcon">☀</i> <span id="themeText">Light</span></button>
+    <button id="settingsBtn" class="top-btn"><i>⚙</i> Settings</button>
+    <button id="exportBtn" class="export-btn"><i>▶</i> EXPORT</button>
+  </div>
+</header>
+
+<main class="workspace">
+  <aside class="library panel">
+    <div class="panel-title"><h2>MEDIA</h2><button id="clearLibrary" class="dots">•••</button></div>
+    <div class="library-actions">
+      <button id="importBtn" class="action-btn primary"><span>↥</span> Import</button>
+      <button id="folderBtn" class="action-btn"><span>▰</span> Folder</button>
+      <input id="fileInput" type="file" multiple accept="video/*,audio/*,.mp4,.webm,.mov,.mkv,.mp3,.wav,.m4a,.aac,.ogg,.flac" hidden>
+      <input id="folderInput" type="file" multiple webkitdirectory directory hidden>
+    </div>
+    <div class="search-wrap"><input class="search" id="mediaSearch" placeholder="Search"><span>⌕</span></div><div class="library-hint">Click a clip to preview. Use <b>+</b> to add it to the timeline.</div>
+    <div id="mediaList" class="media-list"></div>
+    <div class="storage"><span class="storage-dot"></span><span id="storageInfo">Local library</span></div>
+  </aside>
+
+  <section class="editor">
+    <div class="preview-wrap">
+      <div class="preview-head"><span id="previewStatus">Ready</span><div><button id="splitBtn" class="small-btn">Split</button><button id="duplicateBtn" class="small-btn">Duplicate</button><button id="fitBtn" class="small-btn">Fit to Audio</button><button id="deleteBtn" class="small-btn danger-soft">Delete</button></div></div>
+      <div class="preview-stage">
+        <video id="previewVideo" playsinline></video>
+        <div class="empty-preview" id="emptyPreview"><div class="play-orb">▶</div><b>Select a clip to preview</b><span>Import media and add it to the timeline</span></div>
+      </div>
+      <div class="transport">
+        <button id="playBtn" class="transport-play">▶</button><button id="stopBtn" class="transport-stop">■</button>
+        <button id="prevBtn" class="transport-mini">|◀</button><button id="nextBtn" class="transport-mini">▶|</button>
+        <span id="timeLabel">00:00 / 00:00</span><input id="seek" class="transport-seek" type="range" min="0" max="1000" value="0"><button id="muteBtn" class="transport-mini">🔊</button><button id="fullscreenBtn" class="transport-mini">⛶</button>
+      </div>
+    </div>
+
+    <div class="timeline-panel">
+      <div class="timeline-head"><h2>TIMELINE</h2><div class="timeline-tools"><button id="queueBtn" class="small-btn">Queue</button><span class="playhead-readout">Playhead <input id="playheadTime" type="number" min="0" step="0.1" value="0.0" title="Exact playhead position in seconds"></span><button id="timelineSettings">⚙</button><button id="timelineMute">🔊</button><input id="timelineVolume" type="range" min="0" max="100" value="100"><span id="durationLabel" class="duration-label">00:00.0</span><span class="zoom-label">Zoom</span><input id="timelineZoom" type="range" min="25" max="220" value="70" step="1" title="Timeline zoom"><button id="timelineFullscreen">⛶</button></div></div>
+      <div class="timeline-scroll" id="timelineScroll"><div class="timeline-canvas" id="timelineCanvas"><div class="ruler" id="ruler"></div><div id="timeline" class="timeline"></div><div id="timelinePlayhead" class="timeline-playhead" role="slider" aria-label="Timeline playhead" tabindex="0"><span></span></div></div></div>
+    </div>
+  </section>
+
+  <aside class="inspector panel">
+    <div class="inspector-title"><h2>AUDIO</h2><button class="dots">•••</button></div>
+    <div class="tabs"><button class="tab active" data-tab="audio">Narration</button><button class="tab" data-tab="text">Text</button><button class="tab" data-tab="music">Music</button></div>
+
+    <section id="audioTab" class="tabcontent">
+      <label class="field-title">Narration</label>
+      <textarea id="ttsText" placeholder="Write or paste narration here..."></textarea>
+      <div class="grid2">
+        <label>Language<select id="language" aria-label="Language"></select></label>
+        <label>Character<select id="voice" aria-label="Voice"></select></label>
+      </div>
+      <div class="slider-field"><div><span>Speed</span><b id="speedValue">0%</b></div><input id="speed" type="range" min="-50" max="100" value="0"></div>
+      <div class="slider-field"><div><span>Pitch</span><b id="pitchValue">0 Hz</b></div><input id="pitch" type="range" min="-50" max="50" value="0"></div>
+      <div class="tts-actions"><button id="ttsCreate" class="primary"><span>✦</span> Create Audio</button><button id="ttsPreview" class="outline-btn"><span>▶</span> Preview</button><button id="ttsUse" class="primary"><span>✓</span> Use Audio</button></div><button id="importNarrationBtn" class="wide-btn" style="margin-top:8px">↥ Import Audio from Device</button><input id="narrationInput" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac" hidden>
+      <div class="progress-wrap hidden" id="ttsProgressWrap"><div class="progress-head"><span id="ttsProgressLabel">Preparing voice</span><b id="ttsProgressPct">0%</b></div><div class="progress"><i id="ttsProgress"></i></div></div>
+      <audio id="ttsAudio" controls></audio>
+      <div id="ttsStatus" class="status">Voice ready</div>
+      <hr>
+      <label class="field-title">Audio timing</label>
+      <div class="grid2"><label>Start (sec)<input id="audioStart" type="number" min="0" step="0.1" value="0"></label><label>End padding (sec)<input id="audioEnd" type="number" min="0" step="0.1" value="0"></label></div>
+      <div class="tts-actions" style="margin-top:8px"><button id="srtBtn" class="outline-btn">Create .SRT</button><button id="downloadSrtBtn" class="outline-btn">Download SRT</button></div>
+      <div class="slider-field"><div><span>Original volume</span><b id="origVolValue">100%</b></div><input id="origVol" type="range" min="0" max="200" value="100"></div>
+      <div class="slider-field"><div><span>Narration volume</span><b id="addVolValue">100%</b></div><input id="addVol" type="range" min="0" max="200" value="100"></div>
+    </section>
+
+    <section id="textTab" class="tabcontent hidden">
+      <label class="field-title">Text tools</label><p class="helper">Use the Narration tab to generate speech. Text settings are saved automatically with the project.</p>
+      <button class="wide-btn" id="focusText">Focus narration box</button>
+    </section>
+
+    <section id="musicTab" class="tabcontent hidden">
+      <label class="field-title">Background music</label>
+      <button id="musicImportBtn" class="wide-btn primary">＋ Import Audio</button>
+      <input id="musicInput" type="file" multiple accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac" hidden>
+      <div id="musicList" class="music-list"></div>
+      <div class="slider-field"><div><span>Music volume</span><b id="musicVolValue">35%</b></div><input id="musicVol" type="range" min="0" max="200" value="35"></div>
+    </section>
+  </aside>
+</main>
+
+<div class="statusbar"><span id="globalStatus">Local processing • files stay in this browser</span><span id="workerStatus"><i></i> Ready</span></div>
+<div class="toast-stack" id="toastStack"></div>
+<script src="config.js"></script><script src="js/idb.js"></script><script src="js/edge-tts.js"></script><script src="js/app.js"></script>
+</body></html>

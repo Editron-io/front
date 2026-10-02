@@ -1,0 +1,1482 @@
+[
+  {
+    "ShortName": "af-ZA-AdriNeural",
+    "Locale": "af-ZA",
+    "FriendlyName": "af-ZA-AdriNeural"
+  },
+  {
+    "ShortName": "af-ZA-WillemNeural",
+    "Locale": "af-ZA",
+    "FriendlyName": "af-ZA-WillemNeural"
+  },
+  {
+    "ShortName": "am-ET-AmehaNeural",
+    "Locale": "am-ET",
+    "FriendlyName": "am-ET-AmehaNeural"
+  },
+  {
+    "ShortName": "am-ET-MekdesNeural",
+    "Locale": "am-ET",
+    "FriendlyName": "am-ET-MekdesNeural"
+  },
+  {
+    "ShortName": "ar-AE-FatimaNeural",
+    "Locale": "ar-AE",
+    "FriendlyName": "ar-AE-FatimaNeural"
+  },
+  {
+    "ShortName": "ar-AE-HamdanNeural",
+    "Locale": "ar-AE",
+    "FriendlyName": "ar-AE-HamdanNeural"
+  },
+  {
+    "ShortName": "ar-BH-AliNeural",
+    "Locale": "ar-BH",
+    "FriendlyName": "ar-BH-AliNeural"
+  },
+  {
+    "ShortName": "ar-BH-LailaNeural",
+    "Locale": "ar-BH",
+    "FriendlyName": "ar-BH-LailaNeural"
+  },
+  {
+    "ShortName": "ar-DZ-AminaNeural",
+    "Locale": "ar-DZ",
+    "FriendlyName": "ar-DZ-AminaNeural"
+  },
+  {
+    "ShortName": "ar-DZ-IsmaelNeural",
+    "Locale": "ar-DZ",
+    "FriendlyName": "ar-DZ-IsmaelNeural"
+  },
+  {
+    "ShortName": "ar-EG-SalmaNeural",
+    "Locale": "ar-EG",
+    "FriendlyName": "ar-EG-SalmaNeural"
+  },
+  {
+    "ShortName": "ar-EG-ShakirNeural",
+    "Locale": "ar-EG",
+    "FriendlyName": "ar-EG-ShakirNeural"
+  },
+  {
+    "ShortName": "ar-IQ-BasselNeural",
+    "Locale": "ar-IQ",
+    "FriendlyName": "ar-IQ-BasselNeural"
+  },
+  {
+    "ShortName": "ar-IQ-RanaNeural",
+    "Locale": "ar-IQ",
+    "FriendlyName": "ar-IQ-RanaNeural"
+  },
+  {
+    "ShortName": "ar-JO-SanaNeural",
+    "Locale": "ar-JO",
+    "FriendlyName": "ar-JO-SanaNeural"
+  },
+  {
+    "ShortName": "ar-JO-TaimNeural",
+    "Locale": "ar-JO",
+    "FriendlyName": "ar-JO-TaimNeural"
+  },
+  {
+    "ShortName": "ar-KW-FahedNeural",
+    "Locale": "ar-KW",
+    "FriendlyName": "ar-KW-FahedNeural"
+  },
+  {
+    "ShortName": "ar-KW-NouraNeural",
+    "Locale": "ar-KW",
+    "FriendlyName": "ar-KW-NouraNeural"
+  },
+  {
+    "ShortName": "ar-LB-LaylaNeural",
+    "Locale": "ar-LB",
+    "FriendlyName": "ar-LB-LaylaNeural"
+  },
+  {
+    "ShortName": "ar-LB-RamiNeural",
+    "Locale": "ar-LB",
+    "FriendlyName": "ar-LB-RamiNeural"
+  },
+  {
+    "ShortName": "ar-LY-ImanNeural",
+    "Locale": "ar-LY",
+    "FriendlyName": "ar-LY-ImanNeural"
+  },
+  {
+    "ShortName": "ar-LY-OmarNeural",
+    "Locale": "ar-LY",
+    "FriendlyName": "ar-LY-OmarNeural"
+  },
+  {
+    "ShortName": "ar-MA-JamalNeural",
+    "Locale": "ar-MA",
+    "FriendlyName": "ar-MA-JamalNeural"
+  },
+  {
+    "ShortName": "ar-MA-MounaNeural",
+    "Locale": "ar-MA",
+    "FriendlyName": "ar-MA-MounaNeural"
+  },
+  {
+    "ShortName": "ar-OM-AbdullahNeural",
+    "Locale": "ar-OM",
+    "FriendlyName": "ar-OM-AbdullahNeural"
+  },
+  {
+    "ShortName": "ar-OM-AyshaNeural",
+    "Locale": "ar-OM",
+    "FriendlyName": "ar-OM-AyshaNeural"
+  },
+  {
+    "ShortName": "ar-QA-AmalNeural",
+    "Locale": "ar-QA",
+    "FriendlyName": "ar-QA-AmalNeural"
+  },
+  {
+    "ShortName": "ar-QA-MoazNeural",
+    "Locale": "ar-QA",
+    "FriendlyName": "ar-QA-MoazNeural"
+  },
+  {
+    "ShortName": "ar-SA-HamedNeural",
+    "Locale": "ar-SA",
+    "FriendlyName": "ar-SA-HamedNeural"
+  },
+  {
+    "ShortName": "ar-SA-ZariyahNeural",
+    "Locale": "ar-SA",
+    "FriendlyName": "ar-SA-ZariyahNeural"
+  },
+  {
+    "ShortName": "ar-SY-AmanyNeural",
+    "Locale": "ar-SY",
+    "FriendlyName": "ar-SY-AmanyNeural"
+  },
+  {
+    "ShortName": "ar-SY-LaithNeural",
+    "Locale": "ar-SY",
+    "FriendlyName": "ar-SY-LaithNeural"
+  },
+  {
+    "ShortName": "ar-TN-HediNeural",
+    "Locale": "ar-TN",
+    "FriendlyName": "ar-TN-HediNeural"
+  },
+  {
+    "ShortName": "ar-TN-ReemNeural",
+    "Locale": "ar-TN",
+    "FriendlyName": "ar-TN-ReemNeural"
+  },
+  {
+    "ShortName": "ar-YE-MaryamNeural",
+    "Locale": "ar-YE",
+    "FriendlyName": "ar-YE-MaryamNeural"
+  },
+  {
+    "ShortName": "ar-YE-SalehNeural",
+    "Locale": "ar-YE",
+    "FriendlyName": "ar-YE-SalehNeural"
+  },
+  {
+    "ShortName": "az-AZ-BabekNeural",
+    "Locale": "az-AZ",
+    "FriendlyName": "az-AZ-BabekNeural"
+  },
+  {
+    "ShortName": "az-AZ-BanuNeural",
+    "Locale": "az-AZ",
+    "FriendlyName": "az-AZ-BanuNeural"
+  },
+  {
+    "ShortName": "bg-BG-BorislavNeural",
+    "Locale": "bg-BG",
+    "FriendlyName": "bg-BG-BorislavNeural"
+  },
+  {
+    "ShortName": "bg-BG-KalinaNeural",
+    "Locale": "bg-BG",
+    "FriendlyName": "bg-BG-KalinaNeural"
+  },
+  {
+    "ShortName": "bn-BD-NabanitaNeural",
+    "Locale": "bn-BD",
+    "FriendlyName": "bn-BD-NabanitaNeural"
+  },
+  {
+    "ShortName": "bn-BD-PradeepNeural",
+    "Locale": "bn-BD",
+    "FriendlyName": "bn-BD-PradeepNeural"
+  },
+  {
+    "ShortName": "bn-IN-BashkarNeural",
+    "Locale": "bn-IN",
+    "FriendlyName": "bn-IN-BashkarNeural"
+  },
+  {
+    "ShortName": "bn-IN-TanishaaNeural",
+    "Locale": "bn-IN",
+    "FriendlyName": "bn-IN-TanishaaNeural"
+  },
+  {
+    "ShortName": "bs-BA-GoranNeural",
+    "Locale": "bs-BA",
+    "FriendlyName": "bs-BA-GoranNeural"
+  },
+  {
+    "ShortName": "bs-BA-VesnaNeural",
+    "Locale": "bs-BA",
+    "FriendlyName": "bs-BA-VesnaNeural"
+  },
+  {
+    "ShortName": "ca-ES-EnricNeural",
+    "Locale": "ca-ES",
+    "FriendlyName": "ca-ES-EnricNeural"
+  },
+  {
+    "ShortName": "ca-ES-JoanaNeural",
+    "Locale": "ca-ES",
+    "FriendlyName": "ca-ES-JoanaNeural"
+  },
+  {
+    "ShortName": "cs-CZ-AntoninNeural",
+    "Locale": "cs-CZ",
+    "FriendlyName": "cs-CZ-AntoninNeural"
+  },
+  {
+    "ShortName": "cs-CZ-VlastaNeural",
+    "Locale": "cs-CZ",
+    "FriendlyName": "cs-CZ-VlastaNeural"
+  },
+  {
+    "ShortName": "cy-GB-AledNeural",
+    "Locale": "cy-GB",
+    "FriendlyName": "cy-GB-AledNeural"
+  },
+  {
+    "ShortName": "cy-GB-NiaNeural",
+    "Locale": "cy-GB",
+    "FriendlyName": "cy-GB-NiaNeural"
+  },
+  {
+    "ShortName": "da-DK-ChristelNeural",
+    "Locale": "da-DK",
+    "FriendlyName": "da-DK-ChristelNeural"
+  },
+  {
+    "ShortName": "da-DK-JeppeNeural",
+    "Locale": "da-DK",
+    "FriendlyName": "da-DK-JeppeNeural"
+  },
+  {
+    "ShortName": "de-AT-IngridNeural",
+    "Locale": "de-AT",
+    "FriendlyName": "de-AT-IngridNeural"
+  },
+  {
+    "ShortName": "de-AT-JonasNeural",
+    "Locale": "de-AT",
+    "FriendlyName": "de-AT-JonasNeural"
+  },
+  {
+    "ShortName": "de-CH-JanNeural",
+    "Locale": "de-CH",
+    "FriendlyName": "de-CH-JanNeural"
+  },
+  {
+    "ShortName": "de-CH-LeniNeural",
+    "Locale": "de-CH",
+    "FriendlyName": "de-CH-LeniNeural"
+  },
+  {
+    "ShortName": "de-DE-AmalaNeural",
+    "Locale": "de-DE",
+    "FriendlyName": "de-DE-AmalaNeural"
+  },
+  {
+    "ShortName": "de-DE-ConradNeural",
+    "Locale": "de-DE",
+    "FriendlyName": "de-DE-ConradNeural"
+  },
+  {
+    "ShortName": "de-DE-FlorianMultilingualNeural",
+    "Locale": "de-DE",
+    "FriendlyName": "de-DE-FlorianMultilingualNeural"
+  },
+  {
+    "ShortName": "de-DE-KatjaNeural",
+    "Locale": "de-DE",
+    "FriendlyName": "de-DE-KatjaNeural"
+  },
+  {
+    "ShortName": "de-DE-KillianNeural",
+    "Locale": "de-DE",
+    "FriendlyName": "de-DE-KillianNeural"
+  },
+  {
+    "ShortName": "de-DE-SeraphinaMultilingualNeural",
+    "Locale": "de-DE",
+    "FriendlyName": "de-DE-SeraphinaMultilingualNeural"
+  },
+  {
+    "ShortName": "el-GR-AthinaNeural",
+    "Locale": "el-GR",
+    "FriendlyName": "el-GR-AthinaNeural"
+  },
+  {
+    "ShortName": "el-GR-NestorasNeural",
+    "Locale": "el-GR",
+    "FriendlyName": "el-GR-NestorasNeural"
+  },
+  {
+    "ShortName": "en-AU-NatashaNeural",
+    "Locale": "en-AU",
+    "FriendlyName": "en-AU-NatashaNeural"
+  },
+  {
+    "ShortName": "en-AU-WilliamNeural",
+    "Locale": "en-AU",
+    "FriendlyName": "en-AU-WilliamNeural"
+  },
+  {
+    "ShortName": "en-CA-ClaraNeural",
+    "Locale": "en-CA",
+    "FriendlyName": "en-CA-ClaraNeural"
+  },
+  {
+    "ShortName": "en-CA-LiamNeural",
+    "Locale": "en-CA",
+    "FriendlyName": "en-CA-LiamNeural"
+  },
+  {
+    "ShortName": "en-GB-LibbyNeural",
+    "Locale": "en-GB",
+    "FriendlyName": "en-GB-LibbyNeural"
+  },
+  {
+    "ShortName": "en-GB-MaisieNeural",
+    "Locale": "en-GB",
+    "FriendlyName": "en-GB-MaisieNeural"
+  },
+  {
+    "ShortName": "en-GB-RyanNeural",
+    "Locale": "en-GB",
+    "FriendlyName": "en-GB-RyanNeural"
+  },
+  {
+    "ShortName": "en-GB-SoniaNeural",
+    "Locale": "en-GB",
+    "FriendlyName": "en-GB-SoniaNeural"
+  },
+  {
+    "ShortName": "en-GB-ThomasNeural",
+    "Locale": "en-GB",
+    "FriendlyName": "en-GB-ThomasNeural"
+  },
+  {
+    "ShortName": "en-HK-SamNeural",
+    "Locale": "en-HK",
+    "FriendlyName": "en-HK-SamNeural"
+  },
+  {
+    "ShortName": "en-HK-YanNeural",
+    "Locale": "en-HK",
+    "FriendlyName": "en-HK-YanNeural"
+  },
+  {
+    "ShortName": "en-IE-ConnorNeural",
+    "Locale": "en-IE",
+    "FriendlyName": "en-IE-ConnorNeural"
+  },
+  {
+    "ShortName": "en-IE-EmilyNeural",
+    "Locale": "en-IE",
+    "FriendlyName": "en-IE-EmilyNeural"
+  },
+  {
+    "ShortName": "en-IN-NeerjaExpressiveNeural",
+    "Locale": "en-IN",
+    "FriendlyName": "en-IN-NeerjaExpressiveNeural"
+  },
+  {
+    "ShortName": "en-IN-NeerjaNeural",
+    "Locale": "en-IN",
+    "FriendlyName": "en-IN-NeerjaNeural"
+  },
+  {
+    "ShortName": "en-IN-PrabhatNeural",
+    "Locale": "en-IN",
+    "FriendlyName": "en-IN-PrabhatNeural"
+  },
+  {
+    "ShortName": "en-KE-AsiliaNeural",
+    "Locale": "en-KE",
+    "FriendlyName": "en-KE-AsiliaNeural"
+  },
+  {
+    "ShortName": "en-KE-ChilembaNeural",
+    "Locale": "en-KE",
+    "FriendlyName": "en-KE-ChilembaNeural"
+  },
+  {
+    "ShortName": "en-NG-AbeoNeural",
+    "Locale": "en-NG",
+    "FriendlyName": "en-NG-AbeoNeural"
+  },
+  {
+    "ShortName": "en-NG-EzinneNeural",
+    "Locale": "en-NG",
+    "FriendlyName": "en-NG-EzinneNeural"
+  },
+  {
+    "ShortName": "en-NZ-MitchellNeural",
+    "Locale": "en-NZ",
+    "FriendlyName": "en-NZ-MitchellNeural"
+  },
+  {
+    "ShortName": "en-NZ-MollyNeural",
+    "Locale": "en-NZ",
+    "FriendlyName": "en-NZ-MollyNeural"
+  },
+  {
+    "ShortName": "en-PH-JamesNeural",
+    "Locale": "en-PH",
+    "FriendlyName": "en-PH-JamesNeural"
+  },
+  {
+    "ShortName": "en-PH-RosaNeural",
+    "Locale": "en-PH",
+    "FriendlyName": "en-PH-RosaNeural"
+  },
+  {
+    "ShortName": "en-SG-LunaNeural",
+    "Locale": "en-SG",
+    "FriendlyName": "en-SG-LunaNeural"
+  },
+  {
+    "ShortName": "en-SG-WayneNeural",
+    "Locale": "en-SG",
+    "FriendlyName": "en-SG-WayneNeural"
+  },
+  {
+    "ShortName": "en-TZ-ElimuNeural",
+    "Locale": "en-TZ",
+    "FriendlyName": "en-TZ-ElimuNeural"
+  },
+  {
+    "ShortName": "en-TZ-ImaniNeural",
+    "Locale": "en-TZ",
+    "FriendlyName": "en-TZ-ImaniNeural"
+  },
+  {
+    "ShortName": "en-US-AnaNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-AnaNeural"
+  },
+  {
+    "ShortName": "en-US-AndrewMultilingualNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-AndrewMultilingualNeural"
+  },
+  {
+    "ShortName": "en-US-AndrewNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-AndrewNeural"
+  },
+  {
+    "ShortName": "en-US-AriaNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-AriaNeural"
+  },
+  {
+    "ShortName": "en-US-AvaMultilingualNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-AvaMultilingualNeural"
+  },
+  {
+    "ShortName": "en-US-AvaNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-AvaNeural"
+  },
+  {
+    "ShortName": "en-US-BrianMultilingualNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-BrianMultilingualNeural"
+  },
+  {
+    "ShortName": "en-US-BrianNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-BrianNeural"
+  },
+  {
+    "ShortName": "en-US-ChristopherNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-ChristopherNeural"
+  },
+  {
+    "ShortName": "en-US-EmmaMultilingualNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-EmmaMultilingualNeural"
+  },
+  {
+    "ShortName": "en-US-EmmaNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-EmmaNeural"
+  },
+  {
+    "ShortName": "en-US-EricNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-EricNeural"
+  },
+  {
+    "ShortName": "en-US-GuyNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-GuyNeural"
+  },
+  {
+    "ShortName": "en-US-JennyNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-JennyNeural"
+  },
+  {
+    "ShortName": "en-US-MichelleNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-MichelleNeural"
+  },
+  {
+    "ShortName": "en-US-RogerNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-RogerNeural"
+  },
+  {
+    "ShortName": "en-US-SteffanNeural",
+    "Locale": "en-US",
+    "FriendlyName": "en-US-SteffanNeural"
+  },
+  {
+    "ShortName": "es-AR-ElenaNeural",
+    "Locale": "es-AR",
+    "FriendlyName": "es-AR-ElenaNeural"
+  },
+  {
+    "ShortName": "es-AR-TomasNeural",
+    "Locale": "es-AR",
+    "FriendlyName": "es-AR-TomasNeural"
+  },
+  {
+    "ShortName": "es-BO-MarceloNeural",
+    "Locale": "es-BO",
+    "FriendlyName": "es-BO-MarceloNeural"
+  },
+  {
+    "ShortName": "es-BO-SofiaNeural",
+    "Locale": "es-BO",
+    "FriendlyName": "es-BO-SofiaNeural"
+  },
+  {
+    "ShortName": "es-CL-CatalinaNeural",
+    "Locale": "es-CL",
+    "FriendlyName": "es-CL-CatalinaNeural"
+  },
+  {
+    "ShortName": "es-CL-LorenzoNeural",
+    "Locale": "es-CL",
+    "FriendlyName": "es-CL-LorenzoNeural"
+  },
+  {
+    "ShortName": "es-CO-GonzaloNeural",
+    "Locale": "es-CO",
+    "FriendlyName": "es-CO-GonzaloNeural"
+  },
+  {
+    "ShortName": "es-CO-SalomeNeural",
+    "Locale": "es-CO",
+    "FriendlyName": "es-CO-SalomeNeural"
+  },
+  {
+    "ShortName": "es-CR-JuanNeural",
+    "Locale": "es-CR",
+    "FriendlyName": "es-CR-JuanNeural"
+  },
+  {
+    "ShortName": "es-CR-MariaNeural",
+    "Locale": "es-CR",
+    "FriendlyName": "es-CR-MariaNeural"
+  },
+  {
+    "ShortName": "es-CU-BelkysNeural",
+    "Locale": "es-CU",
+    "FriendlyName": "es-CU-BelkysNeural"
+  },
+  {
+    "ShortName": "es-CU-ManuelNeural",
+    "Locale": "es-CU",
+    "FriendlyName": "es-CU-ManuelNeural"
+  },
+  {
+    "ShortName": "es-DO-EmilioNeural",
+    "Locale": "es-DO",
+    "FriendlyName": "es-DO-EmilioNeural"
+  },
+  {
+    "ShortName": "es-DO-RamonaNeural",
+    "Locale": "es-DO",
+    "FriendlyName": "es-DO-RamonaNeural"
+  },
+  {
+    "ShortName": "es-EC-AndreaNeural",
+    "Locale": "es-EC",
+    "FriendlyName": "es-EC-AndreaNeural"
+  },
+  {
+    "ShortName": "es-EC-LuisNeural",
+    "Locale": "es-EC",
+    "FriendlyName": "es-EC-LuisNeural"
+  },
+  {
+    "ShortName": "es-ES-AlvaroNeural",
+    "Locale": "es-ES",
+    "FriendlyName": "es-ES-AlvaroNeural"
+  },
+  {
+    "ShortName": "es-ES-ElviraNeural",
+    "Locale": "es-ES",
+    "FriendlyName": "es-ES-ElviraNeural"
+  },
+  {
+    "ShortName": "es-ES-XimenaNeural",
+    "Locale": "es-ES",
+    "FriendlyName": "es-ES-XimenaNeural"
+  },
+  {
+    "ShortName": "es-US-AlonsoNeural",
+    "Locale": "es-US",
+    "FriendlyName": "es-US-AlonsoNeural"
+  },
+  {
+    "ShortName": "es-US-PalomaNeural",
+    "Locale": "es-US",
+    "FriendlyName": "es-US-PalomaNeural"
+  },
+  {
+    "ShortName": "et-EE-AnuNeural",
+    "Locale": "et-EE",
+    "FriendlyName": "et-EE-AnuNeural"
+  },
+  {
+    "ShortName": "et-EE-KertNeural",
+    "Locale": "et-EE",
+    "FriendlyName": "et-EE-KertNeural"
+  },
+  {
+    "ShortName": "fa-IR-DilaraNeural",
+    "Locale": "fa-IR",
+    "FriendlyName": "fa-IR-DilaraNeural"
+  },
+  {
+    "ShortName": "fa-IR-FaridNeural",
+    "Locale": "fa-IR",
+    "FriendlyName": "fa-IR-FaridNeural"
+  },
+  {
+    "ShortName": "fi-FI-HarriNeural",
+    "Locale": "fi-FI",
+    "FriendlyName": "fi-FI-HarriNeural"
+  },
+  {
+    "ShortName": "fi-FI-NooraNeural",
+    "Locale": "fi-FI",
+    "FriendlyName": "fi-FI-NooraNeural"
+  },
+  {
+    "ShortName": "fil-PH-AngeloNeural",
+    "Locale": "fil-PH",
+    "FriendlyName": "fil-PH-AngeloNeural"
+  },
+  {
+    "ShortName": "fil-PH-BlessicaNeural",
+    "Locale": "fil-PH",
+    "FriendlyName": "fil-PH-BlessicaNeural"
+  },
+  {
+    "ShortName": "fr-BE-CharlineNeural",
+    "Locale": "fr-BE",
+    "FriendlyName": "fr-BE-CharlineNeural"
+  },
+  {
+    "ShortName": "fr-BE-GerardNeural",
+    "Locale": "fr-BE",
+    "FriendlyName": "fr-BE-GerardNeural"
+  },
+  {
+    "ShortName": "fr-CA-AntoineNeural",
+    "Locale": "fr-CA",
+    "FriendlyName": "fr-CA-AntoineNeural"
+  },
+  {
+    "ShortName": "fr-CA-JeanNeural",
+    "Locale": "fr-CA",
+    "FriendlyName": "fr-CA-JeanNeural"
+  },
+  {
+    "ShortName": "fr-CA-SylvieNeural",
+    "Locale": "fr-CA",
+    "FriendlyName": "fr-CA-SylvieNeural"
+  },
+  {
+    "ShortName": "fr-CA-ThierryNeural",
+    "Locale": "fr-CA",
+    "FriendlyName": "fr-CA-ThierryNeural"
+  },
+  {
+    "ShortName": "fr-CH-ArianeNeural",
+    "Locale": "fr-CH",
+    "FriendlyName": "fr-CH-ArianeNeural"
+  },
+  {
+    "ShortName": "fr-CH-FabriceNeural",
+    "Locale": "fr-CH",
+    "FriendlyName": "fr-CH-FabriceNeural"
+  },
+  {
+    "ShortName": "fr-FR-DeniseNeural",
+    "Locale": "fr-FR",
+    "FriendlyName": "fr-FR-DeniseNeural"
+  },
+  {
+    "ShortName": "fr-FR-EloiseNeural",
+    "Locale": "fr-FR",
+    "FriendlyName": "fr-FR-EloiseNeural"
+  },
+  {
+    "ShortName": "fr-FR-HenriNeural",
+    "Locale": "fr-FR",
+    "FriendlyName": "fr-FR-HenriNeural"
+  },
+  {
+    "ShortName": "fr-FR-RemyMultilingualNeural",
+    "Locale": "fr-FR",
+    "FriendlyName": "fr-FR-RemyMultilingualNeural"
+  },
+  {
+    "ShortName": "fr-FR-VivienneMultilingualNeural",
+    "Locale": "fr-FR",
+    "FriendlyName": "fr-FR-VivienneMultilingualNeural"
+  },
+  {
+    "ShortName": "ga-IE-ColmNeural",
+    "Locale": "ga-IE",
+    "FriendlyName": "ga-IE-ColmNeural"
+  },
+  {
+    "ShortName": "ga-IE-OrlaNeural",
+    "Locale": "ga-IE",
+    "FriendlyName": "ga-IE-OrlaNeural"
+  },
+  {
+    "ShortName": "gl-ES-RoiNeural",
+    "Locale": "gl-ES",
+    "FriendlyName": "gl-ES-RoiNeural"
+  },
+  {
+    "ShortName": "gl-ES-SabelaNeural",
+    "Locale": "gl-ES",
+    "FriendlyName": "gl-ES-SabelaNeural"
+  },
+  {
+    "ShortName": "gu-IN-DhwaniNeural",
+    "Locale": "gu-IN",
+    "FriendlyName": "gu-IN-DhwaniNeural"
+  },
+  {
+    "ShortName": "gu-IN-NiranjanNeural",
+    "Locale": "gu-IN",
+    "FriendlyName": "gu-IN-NiranjanNeural"
+  },
+  {
+    "ShortName": "he-IL-AvriNeural",
+    "Locale": "he-IL",
+    "FriendlyName": "he-IL-AvriNeural"
+  },
+  {
+    "ShortName": "he-IL-HilaNeural",
+    "Locale": "he-IL",
+    "FriendlyName": "he-IL-HilaNeural"
+  },
+  {
+    "ShortName": "hi-IN-MadhurNeural",
+    "Locale": "hi-IN",
+    "FriendlyName": "hi-IN-MadhurNeural"
+  },
+  {
+    "ShortName": "hi-IN-SwaraNeural",
+    "Locale": "hi-IN",
+    "FriendlyName": "hi-IN-SwaraNeural"
+  },
+  {
+    "ShortName": "hr-HR-GabrijelaNeural",
+    "Locale": "hr-HR",
+    "FriendlyName": "hr-HR-GabrijelaNeural"
+  },
+  {
+    "ShortName": "hr-HR-SreckoNeural",
+    "Locale": "hr-HR",
+    "FriendlyName": "hr-HR-SreckoNeural"
+  },
+  {
+    "ShortName": "hu-HU-NoemiNeural",
+    "Locale": "hu-HU",
+    "FriendlyName": "hu-HU-NoemiNeural"
+  },
+  {
+    "ShortName": "hu-HU-TamasNeural",
+    "Locale": "hu-HU",
+    "FriendlyName": "hu-HU-TamasNeural"
+  },
+  {
+    "ShortName": "id-ID-ArdiNeural",
+    "Locale": "id-ID",
+    "FriendlyName": "id-ID-ArdiNeural"
+  },
+  {
+    "ShortName": "id-ID-GadisNeural",
+    "Locale": "id-ID",
+    "FriendlyName": "id-ID-GadisNeural"
+  },
+  {
+    "ShortName": "is-IS-GudrunNeural",
+    "Locale": "is-IS",
+    "FriendlyName": "is-IS-GudrunNeural"
+  },
+  {
+    "ShortName": "is-IS-GunnarNeural",
+    "Locale": "is-IS",
+    "FriendlyName": "is-IS-GunnarNeural"
+  },
+  {
+    "ShortName": "it-IT-DiegoNeural",
+    "Locale": "it-IT",
+    "FriendlyName": "it-IT-DiegoNeural"
+  },
+  {
+    "ShortName": "it-IT-ElsaNeural",
+    "Locale": "it-IT",
+    "FriendlyName": "it-IT-ElsaNeural"
+  },
+  {
+    "ShortName": "it-IT-GiuseppeMultilingualNeural",
+    "Locale": "it-IT",
+    "FriendlyName": "it-IT-GiuseppeMultilingualNeural"
+  },
+  {
+    "ShortName": "it-IT-IsabellaNeural",
+    "Locale": "it-IT",
+    "FriendlyName": "it-IT-IsabellaNeural"
+  },
+  {
+    "ShortName": "iu-Cans-CA-SiqiniqNeural",
+    "Locale": "iu-Cans-CA",
+    "FriendlyName": "iu-Cans-CA-SiqiniqNeural"
+  },
+  {
+    "ShortName": "iu-Cans-CA-TaqqiqNeural",
+    "Locale": "iu-Cans-CA",
+    "FriendlyName": "iu-Cans-CA-TaqqiqNeural"
+  },
+  {
+    "ShortName": "iu-Latn-CA-SiqiniqNeural",
+    "Locale": "iu-Latn-CA",
+    "FriendlyName": "iu-Latn-CA-SiqiniqNeural"
+  },
+  {
+    "ShortName": "iu-Latn-CA-TaqqiqNeural",
+    "Locale": "iu-Latn-CA",
+    "FriendlyName": "iu-Latn-CA-TaqqiqNeural"
+  },
+  {
+    "ShortName": "ja-JP-KeitaNeural",
+    "Locale": "ja-JP",
+    "FriendlyName": "ja-JP-KeitaNeural"
+  },
+  {
+    "ShortName": "ja-JP-NanamiNeural",
+    "Locale": "ja-JP",
+    "FriendlyName": "ja-JP-NanamiNeural"
+  },
+  {
+    "ShortName": "jv-ID-DimasNeural",
+    "Locale": "jv-ID",
+    "FriendlyName": "jv-ID-DimasNeural"
+  },
+  {
+    "ShortName": "jv-ID-SitiNeural",
+    "Locale": "jv-ID",
+    "FriendlyName": "jv-ID-SitiNeural"
+  },
+  {
+    "ShortName": "ka-GE-EkaNeural",
+    "Locale": "ka-GE",
+    "FriendlyName": "ka-GE-EkaNeural"
+  },
+  {
+    "ShortName": "ka-GE-GiorgiNeural",
+    "Locale": "ka-GE",
+    "FriendlyName": "ka-GE-GiorgiNeural"
+  },
+  {
+    "ShortName": "kk-KZ-AigulNeural",
+    "Locale": "kk-KZ",
+    "FriendlyName": "kk-KZ-AigulNeural"
+  },
+  {
+    "ShortName": "kk-KZ-DauletNeural",
+    "Locale": "kk-KZ",
+    "FriendlyName": "kk-KZ-DauletNeural"
+  },
+  {
+    "ShortName": "km-KH-PisethNeural",
+    "Locale": "km-KH",
+    "FriendlyName": "km-KH-PisethNeural"
+  },
+  {
+    "ShortName": "km-KH-SreymomNeural",
+    "Locale": "km-KH",
+    "FriendlyName": "km-KH-SreymomNeural"
+  },
+  {
+    "ShortName": "kn-IN-GaganNeural",
+    "Locale": "kn-IN",
+    "FriendlyName": "kn-IN-GaganNeural"
+  },
+  {
+    "ShortName": "kn-IN-SapnaNeural",
+    "Locale": "kn-IN",
+    "FriendlyName": "kn-IN-SapnaNeural"
+  },
+  {
+    "ShortName": "ko-KR-HyunsuMultilingualNeural",
+    "Locale": "ko-KR",
+    "FriendlyName": "ko-KR-HyunsuMultilingualNeural"
+  },
+  {
+    "ShortName": "ko-KR-InJoonNeural",
+    "Locale": "ko-KR",
+    "FriendlyName": "ko-KR-InJoonNeural"
+  },
+  {
+    "ShortName": "ko-KR-SunHiNeural",
+    "Locale": "ko-KR",
+    "FriendlyName": "ko-KR-SunHiNeural"
+  },
+  {
+    "ShortName": "lo-LA-ChanthavongNeural",
+    "Locale": "lo-LA",
+    "FriendlyName": "lo-LA-ChanthavongNeural"
+  },
+  {
+    "ShortName": "lo-LA-KeomanyNeural",
+    "Locale": "lo-LA",
+    "FriendlyName": "lo-LA-KeomanyNeural"
+  },
+  {
+    "ShortName": "lt-LT-LeonasNeural",
+    "Locale": "lt-LT",
+    "FriendlyName": "lt-LT-LeonasNeural"
+  },
+  {
+    "ShortName": "lt-LT-OnaNeural",
+    "Locale": "lt-LT",
+    "FriendlyName": "lt-LT-OnaNeural"
+  },
+  {
+    "ShortName": "lv-LV-EveritaNeural",
+    "Locale": "lv-LV",
+    "FriendlyName": "lv-LV-EveritaNeural"
+  },
+  {
+    "ShortName": "lv-LV-NilsNeural",
+    "Locale": "lv-LV",
+    "FriendlyName": "lv-LV-NilsNeural"
+  },
+  {
+    "ShortName": "mk-MK-AleksandarNeural",
+    "Locale": "mk-MK",
+    "FriendlyName": "mk-MK-AleksandarNeural"
+  },
+  {
+    "ShortName": "mk-MK-MarijaNeural",
+    "Locale": "mk-MK",
+    "FriendlyName": "mk-MK-MarijaNeural"
+  },
+  {
+    "ShortName": "ml-IN-MidhunNeural",
+    "Locale": "ml-IN",
+    "FriendlyName": "ml-IN-MidhunNeural"
+  },
+  {
+    "ShortName": "ml-IN-SobhanaNeural",
+    "Locale": "ml-IN",
+    "FriendlyName": "ml-IN-SobhanaNeural"
+  },
+  {
+    "ShortName": "mn-MN-BataaNeural",
+    "Locale": "mn-MN",
+    "FriendlyName": "mn-MN-BataaNeural"
+  },
+  {
+    "ShortName": "mn-MN-YesuiNeural",
+    "Locale": "mn-MN",
+    "FriendlyName": "mn-MN-YesuiNeural"
+  },
+  {
+    "ShortName": "mr-IN-AarohiNeural",
+    "Locale": "mr-IN",
+    "FriendlyName": "mr-IN-AarohiNeural"
+  },
+  {
+    "ShortName": "mr-IN-ManoharNeural",
+    "Locale": "mr-IN",
+    "FriendlyName": "mr-IN-ManoharNeural"
+  },
+  {
+    "ShortName": "ms-MY-OsmanNeural",
+    "Locale": "ms-MY",
+    "FriendlyName": "ms-MY-OsmanNeural"
+  },
+  {
+    "ShortName": "ms-MY-YasminNeural",
+    "Locale": "ms-MY",
+    "FriendlyName": "ms-MY-YasminNeural"
+  },
+  {
+    "ShortName": "mt-MT-GraceNeural",
+    "Locale": "mt-MT",
+    "FriendlyName": "mt-MT-GraceNeural"
+  },
+  {
+    "ShortName": "mt-MT-JosephNeural",
+    "Locale": "mt-MT",
+    "FriendlyName": "mt-MT-JosephNeural"
+  },
+  {
+    "ShortName": "my-MM-NilarNeural",
+    "Locale": "my-MM",
+    "FriendlyName": "my-MM-NilarNeural"
+  },
+  {
+    "ShortName": "my-MM-ThihaNeural",
+    "Locale": "my-MM",
+    "FriendlyName": "my-MM-ThihaNeural"
+  },
+  {
+    "ShortName": "nb-NO-FinnNeural",
+    "Locale": "nb-NO",
+    "FriendlyName": "nb-NO-FinnNeural"
+  },
+  {
+    "ShortName": "nb-NO-PernilleNeural",
+    "Locale": "nb-NO",
+    "FriendlyName": "nb-NO-PernilleNeural"
+  },
+  {
+    "ShortName": "ne-NP-HemkalaNeural",
+    "Locale": "ne-NP",
+    "FriendlyName": "ne-NP-HemkalaNeural"
+  },
+  {
+    "ShortName": "ne-NP-SagarNeural",
+    "Locale": "ne-NP",
+    "FriendlyName": "ne-NP-SagarNeural"
+  },
+  {
+    "ShortName": "nl-BE-ArnaudNeural",
+    "Locale": "nl-BE",
+    "FriendlyName": "nl-BE-ArnaudNeural"
+  },
+  {
+    "ShortName": "nl-BE-DenaNeural",
+    "Locale": "nl-BE",
+    "FriendlyName": "nl-BE-DenaNeural"
+  },
+  {
+    "ShortName": "nl-NL-ColetteNeural",
+    "Locale": "nl-NL",
+    "FriendlyName": "nl-NL-ColetteNeural"
+  },
+  {
+    "ShortName": "nl-NL-FennaNeural",
+    "Locale": "nl-NL",
+    "FriendlyName": "nl-NL-FennaNeural"
+  },
+  {
+    "ShortName": "nl-NL-MaartenNeural",
+    "Locale": "nl-NL",
+    "FriendlyName": "nl-NL-MaartenNeural"
+  },
+  {
+    "ShortName": "pl-PL-MarekNeural",
+    "Locale": "pl-PL",
+    "FriendlyName": "pl-PL-MarekNeural"
+  },
+  {
+    "ShortName": "pl-PL-ZofiaNeural",
+    "Locale": "pl-PL",
+    "FriendlyName": "pl-PL-ZofiaNeural"
+  },
+  {
+    "ShortName": "ps-AF-GulNawazNeural",
+    "Locale": "ps-AF",
+    "FriendlyName": "ps-AF-GulNawazNeural"
+  },
+  {
+    "ShortName": "ps-AF-LatifaNeural",
+    "Locale": "ps-AF",
+    "FriendlyName": "ps-AF-LatifaNeural"
+  },
+  {
+    "ShortName": "pt-BR-AntonioNeural",
+    "Locale": "pt-BR",
+    "FriendlyName": "pt-BR-AntonioNeural"
+  },
+  {
+    "ShortName": "pt-BR-FranciscaNeural",
+    "Locale": "pt-BR",
+    "FriendlyName": "pt-BR-FranciscaNeural"
+  },
+  {
+    "ShortName": "pt-BR-ThalitaMultilingualNeural",
+    "Locale": "pt-BR",
+    "FriendlyName": "pt-BR-ThalitaMultilingualNeural"
+  },
+  {
+    "ShortName": "pt-PT-DuarteNeural",
+    "Locale": "pt-PT",
+    "FriendlyName": "pt-PT-DuarteNeural"
+  },
+  {
+    "ShortName": "pt-PT-RaquelNeural",
+    "Locale": "pt-PT",
+    "FriendlyName": "pt-PT-RaquelNeural"
+  },
+  {
+    "ShortName": "ro-RO-AlinaNeural",
+    "Locale": "ro-RO",
+    "FriendlyName": "ro-RO-AlinaNeural"
+  },
+  {
+    "ShortName": "ro-RO-EmilNeural",
+    "Locale": "ro-RO",
+    "FriendlyName": "ro-RO-EmilNeural"
+  },
+  {
+    "ShortName": "ru-RU-DmitryNeural",
+    "Locale": "ru-RU",
+    "FriendlyName": "ru-RU-DmitryNeural"
+  },
+  {
+    "ShortName": "ru-RU-SvetlanaNeural",
+    "Locale": "ru-RU",
+    "FriendlyName": "ru-RU-SvetlanaNeural"
+  },
+  {
+    "ShortName": "si-LK-SameeraNeural",
+    "Locale": "si-LK",
+    "FriendlyName": "si-LK-SameeraNeural"
+  },
+  {
+    "ShortName": "si-LK-ThiliniNeural",
+    "Locale": "si-LK",
+    "FriendlyName": "si-LK-ThiliniNeural"
+  },
+  {
+    "ShortName": "sk-SK-LukasNeural",
+    "Locale": "sk-SK",
+    "FriendlyName": "sk-SK-LukasNeural"
+  },
+  {
+    "ShortName": "sk-SK-ViktoriaNeural",
+    "Locale": "sk-SK",
+    "FriendlyName": "sk-SK-ViktoriaNeural"
+  },
+  {
+    "ShortName": "sl-SI-PetraNeural",
+    "Locale": "sl-SI",
+    "FriendlyName": "sl-SI-PetraNeural"
+  },
+  {
+    "ShortName": "sl-SI-RokNeural",
+    "Locale": "sl-SI",
+    "FriendlyName": "sl-SI-RokNeural"
+  },
+  {
+    "ShortName": "so-SO-MuuseNeural",
+    "Locale": "so-SO",
+    "FriendlyName": "so-SO-MuuseNeural"
+  },
+  {
+    "ShortName": "so-SO-UbaxNeural",
+    "Locale": "so-SO",
+    "FriendlyName": "so-SO-UbaxNeural"
+  },
+  {
+    "ShortName": "sq-AL-AnilaNeural",
+    "Locale": "sq-AL",
+    "FriendlyName": "sq-AL-AnilaNeural"
+  },
+  {
+    "ShortName": "sq-AL-IlirNeural",
+    "Locale": "sq-AL",
+    "FriendlyName": "sq-AL-IlirNeural"
+  },
+  {
+    "ShortName": "sr-RS-NicholasNeural",
+    "Locale": "sr-RS",
+    "FriendlyName": "sr-RS-NicholasNeural"
+  },
+  {
+    "ShortName": "sr-RS-SophieNeural",
+    "Locale": "sr-RS",
+    "FriendlyName": "sr-RS-SophieNeural"
+  },
+  {
+    "ShortName": "su-ID-JajangNeural",
+    "Locale": "su-ID",
+    "FriendlyName": "su-ID-JajangNeural"
+  },
+  {
+    "ShortName": "su-ID-TutiNeural",
+    "Locale": "su-ID",
+    "FriendlyName": "su-ID-TutiNeural"
+  },
+  {
+    "ShortName": "sv-SE-MattiasNeural",
+    "Locale": "sv-SE",
+    "FriendlyName": "sv-SE-MattiasNeural"
+  },
+  {
+    "ShortName": "sv-SE-SofieNeural",
+    "Locale": "sv-SE",
+    "FriendlyName": "sv-SE-SofieNeural"
+  },
+  {
+    "ShortName": "sw-KE-RafikiNeural",
+    "Locale": "sw-KE",
+    "FriendlyName": "sw-KE-RafikiNeural"
+  },
+  {
+    "ShortName": "sw-KE-ZuriNeural",
+    "Locale": "sw-KE",
+    "FriendlyName": "sw-KE-ZuriNeural"
+  },
+  {
+    "ShortName": "sw-TZ-DaudiNeural",
+    "Locale": "sw-TZ",
+    "FriendlyName": "sw-TZ-DaudiNeural"
+  },
+  {
+    "ShortName": "sw-TZ-RehemaNeural",
+    "Locale": "sw-TZ",
+    "FriendlyName": "sw-TZ-RehemaNeural"
+  },
+  {
+    "ShortName": "ta-IN-PallaviNeural",
+    "Locale": "ta-IN",
+    "FriendlyName": "ta-IN-PallaviNeural"
+  },
+  {
+    "ShortName": "ta-IN-ValluvarNeural",
+    "Locale": "ta-IN",
+    "FriendlyName": "ta-IN-ValluvarNeural"
+  },
+  {
+    "ShortName": "ta-LK-KumarNeural",
+    "Locale": "ta-LK",
+    "FriendlyName": "ta-LK-KumarNeural"
+  },
+  {
+    "ShortName": "ta-LK-SaranyaNeural",
+    "Locale": "ta-LK",
+    "FriendlyName": "ta-LK-SaranyaNeural"
+  },
+  {
+    "ShortName": "ta-MY-KaniNeural",
+    "Locale": "ta-MY",
+    "FriendlyName": "ta-MY-KaniNeural"
+  },
+  {
+    "ShortName": "ta-MY-SuryaNeural",
+    "Locale": "ta-MY",
+    "FriendlyName": "ta-MY-SuryaNeural"
+  },
+  {
+    "ShortName": "ta-SG-AnbuNeural",
+    "Locale": "ta-SG",
+    "FriendlyName": "ta-SG-AnbuNeural"
+  },
+  {
+    "ShortName": "ta-SG-VenbaNeural",
+    "Locale": "ta-SG",
+    "FriendlyName": "ta-SG-VenbaNeural"
+  },
+  {
+    "ShortName": "te-IN-MohanNeural",
+    "Locale": "te-IN",
+    "FriendlyName": "te-IN-MohanNeural"
+  },
+  {
+    "ShortName": "te-IN-ShrutiNeural",
+    "Locale": "te-IN",
+    "FriendlyName": "te-IN-ShrutiNeural"
+  },
+  {
+    "ShortName": "th-TH-NiwatNeural",
+    "Locale": "th-TH",
+    "FriendlyName": "th-TH-NiwatNeural"
+  },
+  {
+    "ShortName": "th-TH-PremwadeeNeural",
+    "Locale": "th-TH",
+    "FriendlyName": "th-TH-PremwadeeNeural"
+  },
+  {
+    "ShortName": "tr-TR-AhmetNeural",
+    "Locale": "tr-TR",
+    "FriendlyName": "tr-TR-AhmetNeural"
+  },
+  {
+    "ShortName": "tr-TR-EmelNeural",
+    "Locale": "tr-TR",
+    "FriendlyName": "tr-TR-EmelNeural"
+  },
+  {
+    "ShortName": "uk-UA-OstapNeural",
+    "Locale": "uk-UA",
+    "FriendlyName": "uk-UA-OstapNeural"
+  },
+  {
+    "ShortName": "uk-UA-PolinaNeural",
+    "Locale": "uk-UA",
+    "FriendlyName": "uk-UA-PolinaNeural"
+  },
+  {
+    "ShortName": "ur-IN-GulNeural",
+    "Locale": "ur-IN",
+    "FriendlyName": "ur-IN-GulNeural"
+  },
+  {
+    "ShortName": "ur-IN-SalmanNeural",
+    "Locale": "ur-IN",
+    "FriendlyName": "ur-IN-SalmanNeural"
+  },
+  {
+    "ShortName": "ur-PK-AsadNeural",
+    "Locale": "ur-PK",
+    "FriendlyName": "ur-PK-AsadNeural"
+  },
+  {
+    "ShortName": "ur-PK-UzmaNeural",
+    "Locale": "ur-PK",
+    "FriendlyName": "ur-PK-UzmaNeural"
+  },
+  {
+    "ShortName": "uz-UZ-MadinaNeural",
+    "Locale": "uz-UZ",
+    "FriendlyName": "uz-UZ-MadinaNeural"
+  },
+  {
+    "ShortName": "uz-UZ-SardorNeural",
+    "Locale": "uz-UZ",
+    "FriendlyName": "uz-UZ-SardorNeural"
+  },
+  {
+    "ShortName": "vi-VN-HoaiMyNeural",
+    "Locale": "vi-VN",
+    "FriendlyName": "vi-VN-HoaiMyNeural"
+  },
+  {
+    "ShortName": "vi-VN-NamMinhNeural",
+    "Locale": "vi-VN",
+    "FriendlyName": "vi-VN-NamMinhNeural"
+  },
+  {
+    "ShortName": "zh-CN-XiaoxiaoNeural",
+    "Locale": "zh-CN",
+    "FriendlyName": "zh-CN-XiaoxiaoNeural"
+  },
+  {
+    "ShortName": "zh-CN-XiaoyiNeural",
+    "Locale": "zh-CN",
+    "FriendlyName": "zh-CN-XiaoyiNeural"
+  },
+  {
+    "ShortName": "zh-CN-YunjianNeural",
+    "Locale": "zh-CN",
+    "FriendlyName": "zh-CN-YunjianNeural"
+  },
+  {
+    "ShortName": "zh-CN-YunxiNeural",
+    "Locale": "zh-CN",
+    "FriendlyName": "zh-CN-YunxiNeural"
+  },
+  {
+    "ShortName": "zh-CN-YunxiaNeural",
+    "Locale": "zh-CN",
+    "FriendlyName": "zh-CN-YunxiaNeural"
+  },
+  {
+    "ShortName": "zh-CN-YunyangNeural",
+    "Locale": "zh-CN",
+    "FriendlyName": "zh-CN-YunyangNeural"
+  },
+  {
+    "ShortName": "zh-CN-liaoning-XiaobeiNeural",
+    "Locale": "zh-CN",
+    "FriendlyName": "zh-CN-liaoning-XiaobeiNeural"
+  },
+  {
+    "ShortName": "zh-CN-shaanxi-XiaoniNeural",
+    "Locale": "zh-CN",
+    "FriendlyName": "zh-CN-shaanxi-XiaoniNeural"
+  },
+  {
+    "ShortName": "zh-HK-HiuGaaiNeural",
+    "Locale": "zh-HK",
+    "FriendlyName": "zh-HK-HiuGaaiNeural"
+  },
+  {
+    "ShortName": "zh-HK-HiuMaanNeural",
+    "Locale": "zh-HK",
+    "FriendlyName": "zh-HK-HiuMaanNeural"
+  },
+  {
+    "ShortName": "zh-HK-WanLungNeural",
+    "Locale": "zh-HK",
+    "FriendlyName": "zh-HK-WanLungNeural"
+  },
+  {
+    "ShortName": "zh-TW-HsiaoChenNeural",
+    "Locale": "zh-TW",
+    "FriendlyName": "zh-TW-HsiaoChenNeural"
+  },
+  {
+    "ShortName": "zh-TW-HsiaoYuNeural",
+    "Locale": "zh-TW",
+    "FriendlyName": "zh-TW-HsiaoYuNeural"
+  },
+  {
+    "ShortName": "zh-TW-YunJheNeural",
+    "Locale": "zh-TW",
+    "FriendlyName": "zh-TW-YunJheNeural"
+  },
+  {
+    "ShortName": "zu-ZA-ThandoNeural",
+    "Locale": "zu-ZA",
+    "FriendlyName": "zu-ZA-ThandoNeural"
+  },
+  {
+    "ShortName": "zu-ZA-ThembaNeural",
+    "Locale": "zu-ZA",
+    "FriendlyName": "zu-ZA-ThembaNeural"
+  }
+]
