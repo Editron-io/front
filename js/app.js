@@ -51,7 +51,7 @@ let ffmpegInstance=null;
 let ffmpegLoading=null;
 
 /*
-  NEW: cached same-origin blob URL for the FFmpeg worker.
+  Cached same-origin blob URL for the FFmpeg worker.
 */
 let ffmpegWorkerBlobURL=null;
 
@@ -1999,12 +1999,6 @@ $('ttsAudio')?.addEventListener(
 
       return;
     }
-
-    const hit=
-      findAudioTrackAtMs(
-        audioStartMs()+
-        timelineAudioTargetMs()
-      );
 
     const currentId=
       $('ttsAudio')._audioverseMediaId;
@@ -4630,8 +4624,7 @@ async function attachMediaAsAudio(
    ============================================================ */
 
 async function useImportedAudio(
-  id
-){
+  id){
 
   const m=
     state.media.find(
@@ -7169,7 +7162,7 @@ async function writeExportHandle(
 
 /*
   Fetch a remote JS file and turn it into a same-origin Blob URL.
-  This is the trick that bypasses:
+  This bypasses:
     "Failed to construct 'Worker': Script at '...' cannot be
      accessed from origin '...'"
 */
@@ -7197,8 +7190,7 @@ async function getFFmpeg(){
   ffmpegLoading = (async () => {
 
     /*
-      Load the FFmpeg wrapper and util modules from CDN.
-      These are ES modules and load fine cross-origin.
+      Load the FFmpeg wrapper + util from CDN.
     */
     const mod  = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/+esm');
     const util = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/+esm');
@@ -7208,13 +7200,17 @@ async function getFFmpeg(){
 
     const ff = new FFmpeg();
 
-    const coreBase =
-      'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
-
     /*
-      Core files: fetch as blobs so the worker can import them
-      without CORS complaints.
+      ------------------------------------------------------------
+      IMPORTANT: use the ESM core, not UMD.
+      ------------------------------------------------------------
+      The FFmpeg worker does `import(coreURL)` internally, which
+      requires an ES module. The UMD build does NOT export a
+      default and causes "failed to import ffmpeg-core.js".
     */
+    const coreBase =
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm';
+
     const coreURL = await toBlobURL(
       `${coreBase}/ffmpeg-core.js`,
       'text/javascript'
@@ -7227,23 +7223,17 @@ async function getFFmpeg(){
 
     /*
       ------------------------------------------------------------
-      THE FIX
+      Same-origin worker (fixes cross-origin Worker block).
       ------------------------------------------------------------
-      FFmpeg normally spawns its internal Worker from a CDN URL,
-      which browsers block because the Worker script is on a
-      different origin than the page.
-
-      Solution: fetch the worker source, wrap it in a Blob,
-      and hand FFmpeg a blob: URL — always same-origin.
-      ------------------------------------------------------------
+      Try ESM worker first (matches the ESM core we just loaded),
+      then fall back to UMD worker bundles if needed.
     */
     if (!ffmpegWorkerBlobURL) {
 
-      /*
-        Try a few known UMD worker bundle filenames. If one
-        fails, fall through to the next.
-      */
       const candidates = [
+        // ESM worker (best match with ESM core):
+        'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/worker.js',
+        // UMD fallbacks:
         'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/814.ffmpeg.js',
         'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js'
       ];
@@ -7264,12 +7254,6 @@ async function getFFmpeg(){
       }
     }
 
-    /*
-      Boot FFmpeg with:
-        coreURL         : the JS core (blob)
-        wasmURL         : the WASM core (blob)
-        classWorkerURL  : our same-origin worker blob  <-- the fix
-    */
     await ff.load({
       coreURL,
       wasmURL,
