@@ -14,20 +14,8 @@ let state={
 
   selected:null,
 
-  /*
-    audioTracks is the ordered narration queue.
-
-    Example:
-    [audio1, audio2, audio3]
-
-    They are played/exported sequentially.
-  */
   audioTracks:[],
 
-  /*
-    Kept for compatibility with older saved projects.
-    state.audio always points to the first active narration track.
-  */
   audio:null,
 
   music:[],
@@ -35,24 +23,13 @@ let state={
   settings:{
     language:'en-US',
     voice:'en-US-AriaNeural',
-
-    /*
-      100 = normal speed
-      50  = half speed
-      200 = double speed
-    */
     rate:100,
-
     pitch:0,
-
     origVol:100,
     addVol:100,
-
     start:0,
     end:0,
-
     musicVol:35,
-
     timelineZoom:70,
     playheadMs:0
   }
@@ -72,6 +49,11 @@ let timelinePlaybackActive=false;
 
 let ffmpegInstance=null;
 let ffmpegLoading=null;
+
+/*
+  NEW: cached same-origin blob URL for the FFmpeg worker.
+*/
+let ffmpegWorkerBlobURL=null;
 
 
 /* ============================================================
@@ -206,9 +188,6 @@ function normalizeSpeedSetting(value){
 
   if(!Number.isFinite(n))return 100;
 
-  /*
-    Older version used 0 for normal speed.
-  */
   if(n===0)return 100;
 
   return Math.max(
@@ -308,14 +287,6 @@ function initTheme(){
 
 function normalizeAudioTracks(){
 
-  /*
-    New format:
-      state.audioTracks = [...]
-
-    Old format:
-      state.audio = {...}
-  */
-
   if(!Array.isArray(state.audioTracks)){
     state.audioTracks=[];
   }
@@ -331,17 +302,10 @@ function normalizeAudioTracks(){
     ];
   }
 
-  /*
-    Remove invalid entries.
-  */
   state.audioTracks=
     state.audioTracks
       .filter(x=>x&&x.mediaId);
 
-  /*
-    Make sure first track remains available
-    through state.audio for compatibility.
-  */
   state.audio=
     state.audioTracks[0]||
     null;
@@ -401,18 +365,6 @@ function totalNarrationDurationMs(){
 }
 
 
-/*
-  The start offset belongs to the complete narration queue,
-  not every individual audio file.
-
-  This prevents:
-  audio1 + delay
-  audio2 + delay
-  audio3 + delay
-
-  and instead produces:
-  delay + audio1 + audio2 + audio3
-*/
 function audioStartMs(){
 
   return Math.max(
@@ -945,10 +897,6 @@ async function addAudioTrack(
 
   m.duration=dur;
 
-  /*
-    Do not duplicate the same media file
-    in the active queue.
-  */
   if(
     state.audioTracks.some(
       x=>x.mediaId===id
@@ -1062,11 +1010,6 @@ function reorderAudioTracks(
 
 function renderAudioQueue(){
 
-  /*
-    If the current HTML does not contain a dedicated
-    queue element, the rest of the application still works.
-  */
-
   const list=
     $('audioQueue')||
     $('narrationQueue')||
@@ -1175,12 +1118,6 @@ function normalizeAudioTiming(){
 
   const end=
     Number(s.end)||0;
-
-  /*
-    Old projects could store milliseconds.
-    If values are impossibly large for seconds,
-    convert them.
-  */
 
   const total=
     totalNarrationDurationMs();
@@ -1887,13 +1824,6 @@ function syncTimelineAudio(){
   const targetSec=
     hit.offset/1000;
 
-  /*
-    If the correct file is not loaded,
-    load it.
-
-    We cannot await inside ontimeupdate,
-    so playback is resumed after metadata.
-  */
   if(
     audio._audioverseMediaId!==
     hit.media.id
@@ -2076,9 +2006,6 @@ $('ttsAudio')?.addEventListener(
         timelineAudioTargetMs()
       );
 
-    /*
-      Move to next narration file.
-    */
     const currentId=
       $('ttsAudio')._audioverseMediaId;
 
@@ -2688,11 +2615,6 @@ function renderTimeline(){
     $('track-audio');
 
 
-  /*
-    Render the entire sequential audio queue
-    as one continuous visual track.
-  */
-
   if(
     a&&
     state.audioTracks.length
@@ -2925,16 +2847,9 @@ async function saveState(){
       selected:
         state.selected,
 
-      /*
-        New queue format.
-      */
       audioTracks:
         state.audioTracks,
 
-      /*
-        Keep old audio property
-        for backward compatibility.
-      */
       audio:
         state.audio,
 
@@ -4247,11 +4162,6 @@ function invalidateTTSDraft(){
   ttsBlob=null;
   ttsDraft=null;
 
-  /*
-    IMPORTANT:
-    Do not clear active project audio.
-  */
-
   if(
     state.audioTracks?.length
   ){
@@ -4731,10 +4641,6 @@ async function useImportedAudio(
   if(!m)return;
 
 
-  /*
-    Existing media library audio:
-    append to narration queue.
-  */
   await addAudioTrack(
     id,
     !!m.generated
@@ -4770,11 +4676,6 @@ async function previewTTS(){
 
   try{
 
-    /*
-      If there is an active project narration queue,
-      preview it instead of accidentally playing
-      an old TTS draft.
-    */
     if(
       state.audioTracks.length
     ){
@@ -4800,10 +4701,6 @@ async function previewTTS(){
     }
 
 
-    /*
-      No active project audio.
-      Preview the temporary TTS draft.
-    */
     if(ttsBlob){
 
       await loadBlobIntoHTML5Audio(
@@ -4873,10 +4770,6 @@ $('importNarrationBtn').onclick=
     $('narrationInput')?.click();
 
 
-/*
-  Force multiple selection even if
-  the HTML input forgot multiple="multiple".
-*/
 if($('narrationInput')){
 
   $('narrationInput').multiple=true;
@@ -5039,10 +4932,6 @@ $('playBtn').onclick=()=>{
   timelinePlaybackActive=true;
 
 
-  /*
-    If there is a timeline, use its
-    actual timeline playhead.
-  */
   if(state.timeline.length){
 
     const hit=
@@ -6993,10 +6882,6 @@ async function createSRT(){
   }
 
 
-  /*
-    For a single Edge TTS generated file,
-    use the accurate backend word timing.
-  */
   if(
     tracks.length===1&&
     tracks[0].media.generated
@@ -7100,12 +6985,6 @@ async function createSRT(){
     }
   }
 
-
-  /*
-    Multiple imported narration files:
-    use approximate timing across the complete
-    sequential narration duration.
-  */
 
   const srt=
     generateApproxSRT();
@@ -7285,8 +7164,25 @@ async function writeExportHandle(
 
 
 /* ============================================================
-   FFmpeg
+   FFmpeg (client-only, cross-origin-safe)
    ============================================================ */
+
+/*
+  Fetch a remote JS file and turn it into a same-origin Blob URL.
+  This is the trick that bypasses:
+    "Failed to construct 'Worker': Script at '...' cannot be
+     accessed from origin '...'"
+*/
+async function makeBlobURLFromRemoteScript(url){
+  const res = await fetch(url, { mode: 'cors' });
+  if (!res.ok) {
+    throw new Error(`Could not fetch ${url} (HTTP ${res.status})`);
+  }
+  const code = await res.text();
+  const blob = new Blob([code], { type: 'application/javascript' });
+  return URL.createObjectURL(blob);
+}
+
 
 async function getFFmpeg(){
 
@@ -7294,78 +7190,101 @@ async function getFFmpeg(){
     return ffmpegInstance;
   }
 
-
   if(ffmpegLoading){
     return ffmpegLoading;
   }
 
+  ffmpegLoading = (async () => {
 
-  ffmpegLoading=
-    (async()=>{
+    /*
+      Load the FFmpeg wrapper and util modules from CDN.
+      These are ES modules and load fine cross-origin.
+    */
+    const mod  = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/+esm');
+    const util = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/+esm');
 
-      const mod=
-        await import(
-          'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/+esm'
-        );
+    const { FFmpeg } = mod;
+    const { toBlobURL } = util;
 
+    const ff = new FFmpeg();
 
-      const util=
-        await import(
-          'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/+esm'
-        );
+    const coreBase =
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
 
+    /*
+      Core files: fetch as blobs so the worker can import them
+      without CORS complaints.
+    */
+    const coreURL = await toBlobURL(
+      `${coreBase}/ffmpeg-core.js`,
+      'text/javascript'
+    );
 
-      const {
-        FFmpeg
-      }=mod;
+    const wasmURL = await toBlobURL(
+      `${coreBase}/ffmpeg-core.wasm`,
+      'application/wasm'
+    );
 
+    /*
+      ------------------------------------------------------------
+      THE FIX
+      ------------------------------------------------------------
+      FFmpeg normally spawns its internal Worker from a CDN URL,
+      which browsers block because the Worker script is on a
+      different origin than the page.
 
-      const {
-        toBlobURL
-      }=util;
+      Solution: fetch the worker source, wrap it in a Blob,
+      and hand FFmpeg a blob: URL — always same-origin.
+      ------------------------------------------------------------
+    */
+    if (!ffmpegWorkerBlobURL) {
 
+      /*
+        Try a few known UMD worker bundle filenames. If one
+        fails, fall through to the next.
+      */
+      const candidates = [
+        'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/814.ffmpeg.js',
+        'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js'
+      ];
 
-      const ff=
-        new FFmpeg();
+      let lastErr = null;
 
+      for (const url of candidates) {
+        try {
+          ffmpegWorkerBlobURL = await makeBlobURLFromRemoteScript(url);
+          break;
+        } catch (e) {
+          lastErr = e;
+        }
+      }
 
-      const coreBase=
-        'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
+      if (!ffmpegWorkerBlobURL) {
+        throw lastErr || new Error('Could not load FFmpeg worker script.');
+      }
+    }
 
+    /*
+      Boot FFmpeg with:
+        coreURL         : the JS core (blob)
+        wasmURL         : the WASM core (blob)
+        classWorkerURL  : our same-origin worker blob  <-- the fix
+    */
+    await ff.load({
+      coreURL,
+      wasmURL,
+      classWorkerURL: ffmpegWorkerBlobURL
+    });
 
-      const coreURL=
-        await toBlobURL(
-          `${coreBase}/ffmpeg-core.js`,
-          'text/javascript'
-        );
+    ffmpegInstance = ff;
 
+    return ff;
 
-      const wasmURL=
-        await toBlobURL(
-          `${coreBase}/ffmpeg-core.wasm`,
-          'application/wasm'
-        );
-
-
-      await ff.load({
-        coreURL,
-        wasmURL
-      });
-
-
-      ffmpegInstance=ff;
-
-
-      return ff;
-    })();
-
+  })();
 
   try{
-
     return await ffmpegLoading;
-
   }finally{
-
     ffmpegLoading=null;
   }
 }
@@ -8076,17 +7995,6 @@ async function exportProject(){
       );
 
 
-    /*
-      IMPORTANT:
-      Do NOT use data.buffer.
-
-      FFmpeg returns Uint8Array.
-      data.buffer can contain a larger backing
-      ArrayBuffer than the actual file.
-
-      Use the Uint8Array directly.
-    */
-
     const blob=
       new Blob(
         [data],
@@ -8256,10 +8164,6 @@ $('ttsAudio')?.addEventListener(
           audio.currentTime*1000;
 
 
-        /*
-          Keep timeline playhead following
-          sequential narration.
-        */
         timelinePlayheadMs=
           Math.max(
             0,
@@ -8302,10 +8206,7 @@ $('ttsAudio')?.addEventListener(
 $('ttsAudio')?.addEventListener(
   'error',
   ()=>{
-    /*
-      Intentionally do not overwrite
-      the useful application status.
-    */
+    /* Intentionally silent */
   }
 );
 
